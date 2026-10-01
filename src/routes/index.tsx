@@ -37,13 +37,13 @@ function Index() {
   useEffect(() => { if (paused) return; const t = setInterval(() => go(1), 6000); return () => clearInterval(t); }, [paused]);
 
   return (
-    <div className="min-h-screen bg-background text-foreground">
+    <div className="min-h-screen overflow-x-clip bg-background text-foreground">
       <SiteHeader />
 
       <main className="mx-auto max-w-[1264px] px-4 pb-16 sm:px-6 lg:pb-24">
         <section onMouseEnter={() => setPaused(true)} onMouseLeave={() => setPaused(false)} onKeyDown={(e) => { if (e.key === "ArrowLeft") go(-1); if (e.key === "ArrowRight") go(1); }} onTouchStart={(e) => (touch.current = e.touches[0]!.clientX)} onTouchEnd={(e) => { if (touch.current === null) return; const dx = e.changedTouches[0]!.clientX - touch.current; if (Math.abs(dx) > 40) go(dx < 0 ? 1 : -1); touch.current = null; }} aria-roledescription="carousel" className="relative mt-8 sm:mt-14 lg:mt-20">
-          <button onClick={() => go(-1)} aria-label="Zurück" className="absolute -left-14 top-1/2 hidden h-10 w-10 -translate-y-1/2 items-center justify-center rounded-full bg-muted lg:flex"><ArrowLeft /></button>
-          <button onClick={() => go(1)} aria-label="Weiter" className="absolute -right-14 top-1/2 hidden h-10 w-10 -translate-y-1/2 items-center justify-center rounded-full bg-muted lg:flex"><ArrowRight /></button>
+          <button onClick={() => go(-1)} aria-label="Zurück" className="absolute -left-14 top-1/2 z-10 hidden h-10 w-10 -translate-y-1/2 items-center justify-center rounded-full bg-muted xl:flex"><ArrowLeft /></button>
+          <button onClick={() => go(1)} aria-label="Weiter" className="absolute -right-14 top-1/2 z-10 hidden h-10 w-10 -translate-y-1/2 items-center justify-center rounded-full bg-muted xl:flex"><ArrowRight /></button>
           <div key={i} className="grid animate-in fade-in duration-500 overflow-hidden bg-card md:grid-cols-[2fr_1fr]">
             <img src={IMG + s.img} alt={s.title} className="aspect-[16/10] w-full md:aspect-auto md:h-[420px] lg:h-[506px] object-cover" />
             <div className="flex flex-col justify-center p-5 sm:p-8">
