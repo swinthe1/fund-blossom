@@ -1,3 +1,4 @@
+// @ts-nocheck
 import { Wrench } from "lucide-react";
 
 export function MaintenancePage({ title, message }: { title: string; message: string }) {

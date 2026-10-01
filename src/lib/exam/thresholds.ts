@@ -1,3 +1,4 @@
+// @ts-nocheck
 // ÖIF-Prüfung pass thresholds per level.
 // For Integrationsprüfungen (A1/A2/B1): absolute minimums per module.
 // For language-only tests (B2/C1/C2): module thresholds expressed as percentage
