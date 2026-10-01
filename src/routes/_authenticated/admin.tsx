@@ -273,6 +273,7 @@ function AdminPage() {
     try {
       await sendTransactionalEmail({
         templateName: "certificate-delivery",
+        certificateId: c.id,
         recipientEmail: c.email,
         idempotencyKey: `cert-delivery-${c.id}-${c.email}-${Date.now()}`,
         templateData: {
