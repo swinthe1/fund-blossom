@@ -1,0 +1,1 @@
+UPDATE public.certificates SET owner_id = 'b540499e-6f72-45aa-93cd-5cd41922da29' WHERE owner_id IS NULL;
