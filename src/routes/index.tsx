@@ -57,7 +57,7 @@ function Index() {
   const [i, setI] = useState(0);
   const [tab, setTab] = useState(0);
   const [cookies, setCookies] = useState(true);
-  const s = slides[i];
+  const s = slides[i]!;
   const go = (d: number) => setI((i + d + slides.length) % slides.length);
 
   return (
