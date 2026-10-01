@@ -127,6 +127,7 @@ export function SiteHeader() {
             </div>
           ))}
           <Link to="/publikationen" className="hover:text-primary" activeProps={{ className: "text-primary" }}>Publikationen</Link>
+          <Link to="/verify" className="rounded-full bg-primary px-4 py-2 text-sm font-semibold text-primary-foreground hover:opacity-90">Zertifikat verifizieren</Link>
         </nav>
         <a href="https://www.integration.at/" className="mx-auto hidden flex-col 2xl:flex">
           <span className="font-medium">Informationen für Zuwander/innen</span>
@@ -158,6 +159,7 @@ export function SiteHeader() {
             </div>
           ))}
           {links.slice(2).map((l) => <Link key={l.to} to={l.to} onClick={() => setOpen(false)} className="border-b py-3 text-lg font-medium" activeProps={{ className: "text-primary" }}>{l.label}</Link>)}
+          <Link to="/verify" onClick={() => setOpen(false)} className="my-3 rounded-full bg-primary px-4 py-2 text-center font-semibold text-primary-foreground">Zertifikat verifizieren</Link>
           <div className="flex flex-wrap gap-2 border-b py-3">{languages.map((l) => <button key={l} onClick={() => setLang(l)} translate="no" className={`notranslate rounded-full px-3 py-1 text-sm ${l === lang ? "bg-primary text-primary-foreground" : "bg-muted"}`}>{l}</button>)}</div>
           <button onClick={() => { setSearch(true); setOpen(false); }} className="flex items-center gap-2 border-b py-3 text-lg font-medium"><Search className="h-5 w-5" /> Suche</button>
           <a href="https://www.integration.at/" className="py-3"><span className="font-medium">Informationen für Zuwander/innen</span><br /><span className="text-sm text-muted-foreground">integration.at</span></a>
