@@ -101,18 +101,6 @@ function VerifyResult() {
           <div className="mb-6 flex items-center justify-between">
             <Link to="/verify" className="text-sm text-primary hover:underline">← Andere Nummer prüfen</Link>
             <div className="flex items-center gap-3">
-              {canDownload && state === "ok" && (
-                <button
-                  onClick={() => {
-                    const pages = Array.from(document.querySelectorAll<HTMLElement>("article.cert-page"));
-                    downloadCertificateSvg(pages, `Zertifikat-${cert}.svg`);
-                  }}
-                  className="inline-flex items-center gap-2 rounded-md border border-border bg-background px-3 py-1.5 text-sm font-medium hover:bg-muted"
-                >
-                  <Download size={15} />
-                  Als SVG herunterladen
-                </button>
-              )}
               <div className="font-mono text-sm">{cert}</div>
             </div>
           </div>
