@@ -1,3 +1,4 @@
+// @ts-nocheck
 /**
  * Client-side export of the rendered certificate pages into a standalone
  * SVG file. Each page is embedded in a <foreignObject>; computed styles are

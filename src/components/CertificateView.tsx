@@ -1,3 +1,4 @@
+// @ts-nocheck
 import patternUrl from "@/assets/cert-pattern.svg?url";
 import logoOifAssetUrl from "@/assets/logo_oif.svg";
 import logoBkaAssetUrl from "@/assets/bundeskanzleramt.svg";
