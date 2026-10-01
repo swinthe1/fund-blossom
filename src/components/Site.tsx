@@ -134,10 +134,10 @@ export function SiteHeader() {
         </a>
         <div className="ml-auto flex shrink-0 items-center gap-3 font-medium sm:gap-5">
           <div className="relative hidden xl:block">
-            <button aria-expanded={drop === "lang"} onClick={() => setDrop(drop === "lang" ? null : "lang")} className="flex items-center gap-1"><Globe className="h-4 w-4" /> {lang} <ChevronDown className="h-4 w-4" /></button>
+            <button aria-expanded={drop === "lang"} onClick={() => setDrop(drop === "lang" ? null : "lang")} className="notranslate flex items-center gap-1" translate="no"><Globe className="h-4 w-4" /> {lang} <ChevronDown className="h-4 w-4" /></button>
             {drop === "lang" && (
               <div className="absolute right-0 top-full mt-6 w-44 rounded-2xl bg-card p-2 shadow-lg">
-                {languages.map((l) => <button key={l} onClick={() => { setLang(l); setDrop(null); }} className={`block w-full rounded-xl px-4 py-2 text-left hover:bg-muted ${l === lang ? "text-primary" : ""}`}>{l}</button>)}
+                {languages.map((l) => <button key={l} onClick={() => { setLang(l); setDrop(null); }} translate="no" className={`notranslate block w-full rounded-xl px-4 py-2 text-left hover:bg-muted ${l === lang ? "text-primary" : ""}`}>{l}</button>)}
               </div>
             )}
           </div>
@@ -158,7 +158,7 @@ export function SiteHeader() {
             </div>
           ))}
           {links.slice(2).map((l) => <Link key={l.to} to={l.to} onClick={() => setOpen(false)} className="border-b py-3 text-lg font-medium" activeProps={{ className: "text-primary" }}>{l.label}</Link>)}
-          <div className="flex flex-wrap gap-2 border-b py-3">{languages.map((l) => <button key={l} onClick={() => setLang(l)} className={`rounded-full px-3 py-1 text-sm ${l === lang ? "bg-primary text-primary-foreground" : "bg-muted"}`}>{l}</button>)}</div>
+          <div className="flex flex-wrap gap-2 border-b py-3">{languages.map((l) => <button key={l} onClick={() => setLang(l)} translate="no" className={`notranslate rounded-full px-3 py-1 text-sm ${l === lang ? "bg-primary text-primary-foreground" : "bg-muted"}`}>{l}</button>)}</div>
           <button onClick={() => { setSearch(true); setOpen(false); }} className="flex items-center gap-2 border-b py-3 text-lg font-medium"><Search className="h-5 w-5" /> Suche</button>
           <a href="https://www.integration.at/" className="py-3"><span className="font-medium">Informationen für Zuwander/innen</span><br /><span className="text-sm text-muted-foreground">integration.at</span></a>
         </nav>
