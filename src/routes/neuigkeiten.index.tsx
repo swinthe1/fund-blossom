@@ -3,7 +3,7 @@ import { Page, meta } from "@/components/Site";
 import { IMG, articles } from "@/lib/content";
 export const Route = createFileRoute("/neuigkeiten/")({ head: () => meta("Neuigkeiten", "Aktuelle Meldungen des Österreichischen Integrationsfonds."), component: () => (
   <Page title="Neuigkeiten">
-    <div className="grid gap-6 md:grid-cols-3">
+    <div className="grid gap-4 sm:grid-cols-2 sm:gap-6 lg:grid-cols-3">
       {articles.map((n)=>(
         <Link key={n.slug} to="/neuigkeiten/$slug" params={{ slug: n.slug }} className="bg-card">
           <img src={IMG+n.img} alt="" className="aspect-[16/10] w-full object-cover" />

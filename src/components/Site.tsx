@@ -1,13 +1,42 @@
 import { Link } from "@tanstack/react-router";
-import type { ReactNode } from "react";
-import { Globe, Mail, Phone, Search } from "lucide-react";
+import { useEffect, useRef, useState, type ReactNode } from "react";
+import { ChevronDown, Globe, Mail, Menu, Phone, Search, X } from "lucide-react";
+
+const links = [
+  { to: "/der-oeif", label: "Der ÖIF" },
+  { to: "/angebote", label: "Angebote" },
+  { to: "/neuigkeiten", label: "Neuigkeiten" },
+  { to: "/publikationen", label: "Publikationen" },
+  { to: "/kontakt", label: "Kontakt" },
+] as const;
+
+type Sub = { label: string; to: "/der-oeif" | "/angebote" | "/neuigkeiten" | "/publikationen" | "/kontakt"; hash?: string };
+const menus: { label: string; to: Sub["to"]; items: Sub[] }[] = [
+  { label: "Der ÖIF", to: "/der-oeif", items: [
+    { label: "Über uns", to: "/der-oeif" }, { label: "Neuigkeiten", to: "/neuigkeiten" }, { label: "Kontakt & Standorte", to: "/kontakt" } ] },
+  { label: "Angebote", to: "/angebote", items: [
+    { label: "Integrationsmaßnahmen", to: "/angebote", hash: "integrationsmassnahmen" }, { label: "Deutsch lernen", to: "/angebote", hash: "deutsch-lernen" },
+    { label: "Veranstaltungen", to: "/angebote", hash: "veranstaltungen" }, { label: "Weiterbildungen", to: "/angebote", hash: "weiterbildungen" } ] },
+];
+const languages = ["Deutsch", "English", "العربية", "فارسی", "Українська"];
+
+function useOutside(close: () => void) {
+  const ref = useRef<HTMLDivElement>(null);
+  useEffect(() => {
+    const h = (e: MouseEvent) => { if (ref.current && !ref.current.contains(e.target as Node)) close(); };
+    const k = (e: KeyboardEvent) => { if (e.key === "Escape") close(); };
+    document.addEventListener("mousedown", h); document.addEventListener("keydown", k);
+    return () => { document.removeEventListener("mousedown", h); document.removeEventListener("keydown", k); };
+  }, [close]);
+  return ref;
+}
 
 function Logo() {
   return (
     <Link to="/" className="flex items-end gap-2">
       <div className="relative leading-none">
         <span className="absolute -top-2 left-1.5 h-1.5 w-4 bg-primary" />
-        <span className="text-5xl font-bold tracking-tight">ÖIF</span>
+        <span className="text-4xl font-bold sm:text-5xl tracking-tight">ÖIF</span>
       </div>
       <span className="pb-1 text-[10px] font-bold uppercase leading-tight">Österreichischer<br />Integrations<br />Fonds</span>
     </Link>
@@ -15,26 +44,89 @@ function Logo() {
 }
 
 export function SiteHeader() {
+  const [open, setOpen] = useState(false);
+  const [drop, setDrop] = useState<string | null>(null);
+  const [acc, setAcc] = useState<string | null>(null);
+  const [lang, setLang] = useState("Deutsch");
+  const [search, setSearch] = useState(false);
+  const ref = useOutside(() => setDrop(null));
   return (
-    <header className="sticky top-4 z-30 mx-4 flex items-center gap-6 rounded-full bg-card px-6 py-4 shadow-sm">
-      <Logo />
-      <nav className="hidden items-center gap-6 font-medium lg:flex">
-        <Link to="/der-oeif" activeProps={{ className: "text-primary" }}>Der ÖIF</Link>
-        <Link to="/angebote" activeProps={{ className: "text-primary" }}>Angebote</Link>
-        <Link to="/neuigkeiten" activeProps={{ className: "text-primary" }}>Neuigkeiten</Link>
-        <Link to="/publikationen" activeProps={{ className: "text-primary" }}>Publikationen</Link>
-      </nav>
-      <a href="https://www.integration.at/" className="mx-auto hidden flex-col xl:flex">
-        <span className="font-medium">Informationen für Zuwander/innen</span>
-        <span className="text-sm text-muted-foreground">integration.at</span>
-      </a>
-      <div className="ml-auto flex items-center gap-5 font-medium">
-        <span className="hidden items-center gap-1 md:flex"><Globe className="h-4 w-4" /> Deutsch</span>
-        <span className="hidden items-center gap-1 md:flex"><Search className="h-4 w-4" /> Suche</span>
-        <Link to="/kontakt" className="hidden items-center gap-1 md:flex"><Mail className="h-4 w-4" /> Kontakt</Link>
-        <a href="tel:0504680" className="flex items-center gap-2 rounded-full bg-primary px-5 py-3 text-primary-foreground"><Phone className="h-4 w-4" /> 050 46 80</a>
+    <>
+    <header ref={ref} className="sticky top-2 z-30 mx-2 rounded-3xl bg-card shadow-[0_4px_20px_-8px_color-mix(in_oklab,var(--foreground)_25%,transparent)] sm:top-4 sm:mx-4 lg:rounded-full">
+      <div className="flex items-center gap-4 px-4 py-3 sm:px-6 sm:py-4 lg:gap-6">
+        <div className="shrink-0"><Logo /></div>
+        <nav className="hidden items-center gap-6 font-medium lg:flex">
+          {menus.map((m) => (
+            <div key={m.label} className="relative">
+              <button aria-expanded={drop === m.label} onClick={() => setDrop(drop === m.label ? null : m.label)} className="flex items-center gap-1 hover:text-primary">
+                {m.label} <ChevronDown className={`h-4 w-4 transition-transform ${drop === m.label ? "rotate-180" : ""}`} />
+              </button>
+              {drop === m.label && (
+                <div className="absolute left-0 top-full mt-6 w-72 rounded-2xl bg-card p-2 shadow-lg">
+                  {m.items.map((it) => <Link key={it.label} to={it.to} {...(it.hash ? { hash: it.hash } : {})} onClick={() => setDrop(null)} className="block rounded-xl px-4 py-3 hover:bg-muted">{it.label}</Link>)}
+                </div>
+              )}
+            </div>
+          ))}
+          <Link to="/publikationen" className="hover:text-primary" activeProps={{ className: "text-primary" }}>Publikationen</Link>
+        </nav>
+        <a href="https://www.integration.at/" className="mx-auto hidden flex-col 2xl:flex">
+          <span className="font-medium">Informationen für Zuwander/innen</span>
+          <span className="text-sm text-muted-foreground">integration.at</span>
+        </a>
+        <div className="ml-auto flex shrink-0 items-center gap-3 font-medium sm:gap-5">
+          <div className="relative hidden xl:block">
+            <button aria-expanded={drop === "lang"} onClick={() => setDrop(drop === "lang" ? null : "lang")} className="flex items-center gap-1"><Globe className="h-4 w-4" /> {lang} <ChevronDown className="h-4 w-4" /></button>
+            {drop === "lang" && (
+              <div className="absolute right-0 top-full mt-6 w-44 rounded-2xl bg-card p-2 shadow-lg">
+                {languages.map((l) => <button key={l} onClick={() => { setLang(l); setDrop(null); }} className={`block w-full rounded-xl px-4 py-2 text-left hover:bg-muted ${l === lang ? "text-primary" : ""}`}>{l}</button>)}
+              </div>
+            )}
+          </div>
+          <button onClick={() => setSearch(true)} className="hidden items-center gap-1 md:flex"><Search className="h-4 w-4" /> <span className="hidden xl:inline">Suche</span></button>
+          <Link to="/kontakt" className="hidden items-center gap-1 xl:flex"><Mail className="h-4 w-4" /> Kontakt</Link>
+          <a href="tel:0504680" aria-label="Anrufen" className="flex items-center gap-2 rounded-full bg-primary p-3 text-primary-foreground sm:px-5"><Phone className="h-4 w-4" /><span className="hidden sm:inline">050 46 80</span></a>
+          <button onClick={() => setOpen(!open)} aria-label="Menü" aria-expanded={open} className="rounded-full bg-muted p-3 lg:hidden">{open ? <X className="h-5 w-5" /> : <Menu className="h-5 w-5" />}</button>
+        </div>
       </div>
+      {open && (
+        <nav className="flex max-h-[75vh] flex-col overflow-y-auto border-t px-4 pb-4 lg:hidden">
+          {menus.map((m) => (
+            <div key={m.label} className="border-b">
+              <button aria-expanded={acc === m.label} onClick={() => setAcc(acc === m.label ? null : m.label)} className="flex w-full items-center justify-between py-3 text-lg font-medium">
+                {m.label} <ChevronDown className={`h-5 w-5 transition-transform ${acc === m.label ? "rotate-180" : ""}`} />
+              </button>
+              {acc === m.label && <div className="pb-2 pl-4">{m.items.map((it) => <Link key={it.label} to={it.to} {...(it.hash ? { hash: it.hash } : {})} onClick={() => setOpen(false)} className="block py-2 text-muted-foreground">{it.label}</Link>)}</div>}
+            </div>
+          ))}
+          {links.slice(2).map((l) => <Link key={l.to} to={l.to} onClick={() => setOpen(false)} className="border-b py-3 text-lg font-medium" activeProps={{ className: "text-primary" }}>{l.label}</Link>)}
+          <div className="flex flex-wrap gap-2 border-b py-3">{languages.map((l) => <button key={l} onClick={() => setLang(l)} className={`rounded-full px-3 py-1 text-sm ${l === lang ? "bg-primary text-primary-foreground" : "bg-muted"}`}>{l}</button>)}</div>
+          <button onClick={() => { setSearch(true); setOpen(false); }} className="flex items-center gap-2 border-b py-3 text-lg font-medium"><Search className="h-5 w-5" /> Suche</button>
+          <a href="https://www.integration.at/" className="py-3"><span className="font-medium">Informationen für Zuwander/innen</span><br /><span className="text-sm text-muted-foreground">integration.at</span></a>
+        </nav>
+      )}
     </header>
+    {search && <SearchOverlay onClose={() => setSearch(false)} />}
+    </>
+  );
+}
+
+function SearchOverlay({ onClose }: { onClose: () => void }) {
+  const [q, setQ] = useState("");
+  const pages = [
+    { to: "/der-oeif", t: "Der ÖIF" }, { to: "/angebote", t: "Angebote Deutschkurse Integrationsmaßnahmen Weiterbildungen" },
+    { to: "/neuigkeiten", t: "Neuigkeiten Meldungen" }, { to: "/publikationen", t: "Publikationen Jahrbuch Factsheet" }, { to: "/kontakt", t: "Kontakt Hotline" },
+  ] as const;
+  const hits = q.trim() ? pages.filter((p) => p.t.toLowerCase().includes(q.toLowerCase())) : [];
+  useEffect(() => { const k = (e: KeyboardEvent) => e.key === "Escape" && onClose(); document.addEventListener("keydown", k); return () => document.removeEventListener("keydown", k); }, [onClose]);
+  return (
+    <div className="fixed inset-0 z-50 bg-foreground/40 p-4 pt-24" onClick={onClose}>
+      <div className="mx-auto max-w-2xl rounded-3xl bg-card p-6" onClick={(e) => e.stopPropagation()}>
+        <div className="flex items-center gap-3 border-b pb-3"><Search className="h-5 w-5" /><input autoFocus value={q} onChange={(e) => setQ(e.target.value)} placeholder="Suchbegriff eingeben" className="flex-1 bg-transparent text-lg outline-none" /><button onClick={onClose} aria-label="Schließen"><X /></button></div>
+        <ul className="mt-3">{hits.map((h) => <li key={h.to}><Link to={h.to} onClick={onClose} className="block rounded-xl px-3 py-2 hover:bg-muted">{h.t.split(" ")[0]}</Link></li>)}
+          {q && !hits.length && <li className="px-3 py-2 text-muted-foreground">Keine Ergebnisse</li>}</ul>
+      </div>
+    </div>
   );
 }
 
@@ -56,8 +148,9 @@ export function Page({ title, children }: { title: string; children: ReactNode }
   return (
     <div className="min-h-screen bg-background text-foreground">
       <SiteHeader />
-      <main className="mx-auto max-w-[1264px] px-4 pb-24 pt-20">
-        <h1 className="border-b pb-3 text-4xl font-semibold">{title}</h1>
+      <main className="mx-auto max-w-[1264px] px-4 pb-16 pt-10 sm:px-6 sm:pt-16 lg:pb-24 lg:pt-20">
+        <p className="mb-3 text-sm font-medium text-muted-foreground"><Link to="/">Startseite</Link> / {title}</p>
+        <h1 className="border-b pb-3 text-2xl font-semibold sm:text-3xl lg:text-4xl">{title}</h1>
         <div className="mt-8">{children}</div>
       </main>
       <SiteFooter />
