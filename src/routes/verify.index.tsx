@@ -1,5 +1,5 @@
 // @ts-nocheck
-import { createFileRoute, useNavigate } from "@tanstack/react-router";
+import { createFileRoute, useNavigate, Link } from "@tanstack/react-router";
 import { useState } from "react";
 
 export const Route = createFileRoute("/verify/")({
@@ -29,6 +29,7 @@ function VerifySearchPage() {
     <div className="flex min-h-screen flex-col">
       <main className="flex-1 bg-muted/30 py-16">
         <div className="mx-auto max-w-2xl px-4">
+          <Link to="/" className="mb-4 inline-flex items-center gap-2 rounded-full border border-border bg-background px-4 py-2 text-sm font-semibold hover:text-primary">← Zurück zur Startseite</Link>
           <div className="rounded-lg border border-border bg-background p-8 shadow-sm">
             <div className="text-xs font-bold uppercase tracking-[0.25em] text-primary">
               Österreichischer Integrationsfonds
