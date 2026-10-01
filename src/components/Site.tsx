@@ -195,7 +195,7 @@ export function SiteFooter() {
     <footer className="bg-foreground px-4 py-12 text-background">
       <div className="mx-auto grid max-w-[1264px] gap-8 md:grid-cols-3">
         <div><p className="text-lg font-bold">Österreichischer Integrationsfonds</p><p className="mt-2 text-sm opacity-80">Landstraßer Hauptstraße 26, 1030 Wien</p></div>
-        <div className="text-sm opacity-80"><p>Service-Hotline: 050 46 80</p><p>E-Mail: info@integrationsfonds.at</p></div>
+        <div className="text-sm opacity-80"><p>Service-Hotline: 050 46 80</p><p>E-Mail: info@integrationsfondos.at</p></div>
         <div className="flex gap-4 text-sm opacity-80 md:justify-end">
           <Link to="/impressum">Impressum</Link><Link to="/datenschutz">Datenschutz</Link><Link to="/kontakt">Kontakt</Link>
         </div>
