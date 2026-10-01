@@ -113,7 +113,7 @@ export function CertificateView({ cert }: { cert: Cert }) {
       >
         {/* Austria map watermark — sits behind the field grid */}
         <img
-          src={ausMapAsset.url}
+          src={ausMapAssetUrl}
           alt=""
           aria-hidden="true"
           className="pointer-events-none absolute left-1/2 z-0 w-[140%] -translate-x-1/2 select-none"
@@ -121,12 +121,12 @@ export function CertificateView({ cert }: { cert: Cert }) {
         />
         <div className="relative z-10 flex items-start justify-between gap-3">
           <img
-            src={logoOifAsset.url}
+            src={logoOifAssetUrl}
             alt="Österreichischer Integrationsfonds"
             className="h-12 sm:h-14 w-auto"
           />
           <img
-            src={logoBkaAsset.url}
+            src={logoBkaAssetUrl}
             alt="Bundeskanzleramt"
             className="h-10 sm:h-12 w-auto"
           />
@@ -314,7 +314,7 @@ export function CertificateView({ cert }: { cert: Cert }) {
                   className="w-[140px] border-r border-black/80 p-1 align-middle"
                 >
                   <img
-                    src={oifSealAsset.url}
+                    src={oifSealAssetUrl}
                     alt="ÖIF — Österreichischer Integrationsfonds"
                     className="mx-auto h-[88px] w-[88px] object-contain"
                   />

@@ -75,11 +75,8 @@ function VerifyResult() {
   useEffect(() => {
     (async () => {
       const needle = decodeURIComponent(cert).trim();
-      const { data, error } = await supabase
-        .from("certificates")
-        .select("*")
-        .ilike("certificate_number", needle)
-        .maybeSingle();
+      const { data: rows, error } = await supabase.rpc("get_certificate_by_number", { _number: needle });
+      const data = (rows as any[] | null)?.[0] ?? null;
       if (error) {
         setErrMsg(error.message);
         setState("error");
