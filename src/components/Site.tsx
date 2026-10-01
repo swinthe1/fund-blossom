@@ -20,6 +20,22 @@ const menus: { label: string; to: Sub["to"]; items: Sub[] }[] = [
     { label: "Veranstaltungen", to: "/angebote", hash: "veranstaltungen" }, { label: "Weiterbildungen", to: "/angebote", hash: "weiterbildungen" } ] },
 ];
 const languages = ["Deutsch", "English", "العربية", "فارسی", "Українська"];
+const langCodes: Record<string, string> = { Deutsch: "de", English: "en", "العربية": "ar", "فارسی": "fa", "Українська": "uk" };
+function loadTranslate() {
+  if (document.getElementById("gt-script")) return;
+  const w = window as any;
+  const box = document.createElement("div");
+  box.id = "google_translate_element";
+  box.style.display = "none";
+  document.body.appendChild(box);
+  w.googleTranslateElementInit = () => {
+    new w.google.translate.TranslateElement({ pageLanguage: "de", includedLanguages: "en,ar,fa,uk", autoDisplay: false }, "google_translate_element");
+  };
+  const s = document.createElement("script");
+  s.id = "gt-script";
+  s.src = "https://translate.google.com/translate_a/element.js?cb=googleTranslateElementInit";
+  document.body.appendChild(s);
+}
 
 function useOutside(close: () => void) {
   const ref = useRef<HTMLDivElement>(null);
@@ -44,7 +60,26 @@ export function SiteHeader() {
   const [open, setOpen] = useState(false);
   const [drop, setDrop] = useState<string | null>(null);
   const [acc, setAcc] = useState<string | null>(null);
-  const [lang, setLang] = useState("Deutsch");
+  const [lang, setLangState] = useState("Deutsch");
+  useEffect(() => {
+    const m = document.cookie.match(/googtrans=\/de\/(\w+)/);
+    const found = m && Object.entries(langCodes).find(([, c]) => c === m[1]);
+    if (found) setLangState(found[0]);
+    const code = found ? found[1] : "de";
+    document.documentElement.dir = code === "ar" || code === "fa" ? "rtl" : "ltr";
+    if (code !== "de") loadTranslate();
+  }, []);
+  const setLang = (l: string) => {
+    const code = langCodes[l] ?? "de";
+    const host = location.hostname;
+    const domains = ["", `;domain=${host}`, `;domain=.${host.replace(/^www\./, "")}`];
+    for (const d of domains) {
+      document.cookie = code === "de"
+        ? `googtrans=;expires=Thu, 01 Jan 1970 00:00:00 GMT;path=/${d}`
+        : `googtrans=/de/${code};path=/${d}`;
+    }
+    location.reload();
+  };
   const [search, setSearch] = useState(false);
   const ref = useOutside(() => setDrop(null));
   return (
