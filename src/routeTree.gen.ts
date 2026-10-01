@@ -24,6 +24,7 @@ import { Route as NeuigkeitenIndexRouteImport } from './routes/neuigkeiten.index
 import { Route as NeuigkeitenSlugRouteImport } from './routes/neuigkeiten.$slug'
 import { Route as VerifyIndexRouteImport } from './routes/verify.index'
 import { Route as VerifyCertRouteImport } from './routes/verify.$cert'
+import { Route as LovableEmailTransactionalPreviewRouteImport } from './routes/lovable/email/transactional/preview'
 
 const IndexRoute = IndexRouteImport.update({
   id: '/',
@@ -99,6 +100,12 @@ const VerifyCertRoute = VerifyCertRouteImport.update({
   path: '/verify/$cert',
   getParentRoute: () => rootRouteImport,
 } as any)
+const LovableEmailTransactionalPreviewRoute =
+  LovableEmailTransactionalPreviewRouteImport.update({
+    id: '/lovable/email/transactional/preview',
+    path: '/lovable/email/transactional/preview',
+    getParentRoute: () => rootRouteImport,
+  } as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
@@ -115,6 +122,7 @@ export interface FileRoutesByFullPath {
   '/verify/$cert': typeof VerifyCertRoute
   '/neuigkeiten/': typeof NeuigkeitenIndexRoute
   '/verify/': typeof VerifyIndexRoute
+  '/lovable/email/transactional/preview': typeof LovableEmailTransactionalPreviewRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
@@ -130,6 +138,7 @@ export interface FileRoutesByTo {
   '/verify/$cert': typeof VerifyCertRoute
   '/neuigkeiten': typeof NeuigkeitenIndexRoute
   '/verify': typeof VerifyIndexRoute
+  '/lovable/email/transactional/preview': typeof LovableEmailTransactionalPreviewRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
@@ -148,6 +157,7 @@ export interface FileRoutesById {
   '/verify/$cert': typeof VerifyCertRoute
   '/neuigkeiten/': typeof NeuigkeitenIndexRoute
   '/verify/': typeof VerifyIndexRoute
+  '/lovable/email/transactional/preview': typeof LovableEmailTransactionalPreviewRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
@@ -166,6 +176,7 @@ export interface FileRouteTypes {
     | '/verify/$cert'
     | '/neuigkeiten/'
     | '/verify/'
+    | '/lovable/email/transactional/preview'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
@@ -181,6 +192,7 @@ export interface FileRouteTypes {
     | '/verify/$cert'
     | '/neuigkeiten'
     | '/verify'
+    | '/lovable/email/transactional/preview'
   id:
     | '__root__'
     | '/'
@@ -198,6 +210,7 @@ export interface FileRouteTypes {
     | '/verify/$cert'
     | '/neuigkeiten/'
     | '/verify/'
+    | '/lovable/email/transactional/preview'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
@@ -213,6 +226,7 @@ export interface RootRouteChildren {
   PublikationenRoute: typeof PublikationenRoute
   VerifyCertRoute: typeof VerifyCertRoute
   VerifyIndexRoute: typeof VerifyIndexRoute
+  LovableEmailTransactionalPreviewRoute: typeof LovableEmailTransactionalPreviewRoute
 }
 
 declare module '@tanstack/react-router' {
@@ -322,6 +336,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof VerifyCertRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/lovable/email/transactional/preview': {
+      id: '/lovable/email/transactional/preview'
+      path: '/lovable/email/transactional/preview'
+      fullPath: '/lovable/email/transactional/preview'
+      preLoaderRoute: typeof LovableEmailTransactionalPreviewRouteImport
+      parentRoute: typeof rootRouteImport
+    }
   }
 }
 
@@ -363,6 +384,7 @@ const rootRouteChildren: RootRouteChildren = {
   PublikationenRoute: PublikationenRoute,
   VerifyCertRoute: VerifyCertRoute,
   VerifyIndexRoute: VerifyIndexRoute,
+  LovableEmailTransactionalPreviewRoute: LovableEmailTransactionalPreviewRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)

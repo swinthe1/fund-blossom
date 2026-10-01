@@ -1,34 +1,15 @@
-import { supabase } from '@/integrations/supabase/client'
+import { sendCertificateEmail } from './certificate.functions'
 
 export interface SendTransactionalEmailArgs {
   templateName: string
   recipientEmail: string
   idempotencyKey: string
   templateData?: Record<string, unknown>
+  certificateId?: string
 }
 
+// Admin UI entry point: the server loads the certificate itself and sends to its stored address.
 export async function sendTransactionalEmail(args: SendTransactionalEmailArgs): Promise<void> {
-  const { data: sessionData } = await supabase.auth.getSession()
-  const token = sessionData.session?.access_token
-  if (!token) throw new Error('Not authenticated')
-
-  const res = await fetch('/lovable/email/transactional/send', {
-    method: 'POST',
-    headers: {
-      'Content-Type': 'application/json',
-      Authorization: `Bearer ${token}`,
-    },
-    body: JSON.stringify(args),
-  })
-
-  if (!res.ok) {
-    let detail = ''
-    try {
-      const j = await res.json()
-      detail = j?.error || JSON.stringify(j)
-    } catch {
-      detail = await res.text().catch(() => '')
-    }
-    throw new Error(`Email send failed (${res.status}): ${detail}`)
-  }
+  if (!args.certificateId) throw new Error('certificateId fehlt')
+  await sendCertificateEmail({ data: { certificateId: args.certificateId } })
 }
