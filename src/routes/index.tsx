@@ -35,13 +35,13 @@ function Index() {
     <div className="min-h-screen bg-background text-foreground">
       <SiteHeader />
 
-      <main className="mx-auto max-w-[1264px] px-4 pb-24">
-        <section className="relative mt-20">
+      <main className="mx-auto max-w-[1264px] px-4 pb-16 sm:px-6 lg:pb-24">
+        <section className="relative mt-8 sm:mt-14 lg:mt-20">
           <button onClick={() => go(-1)} aria-label="Zurück" className="absolute -left-14 top-1/2 hidden h-10 w-10 -translate-y-1/2 items-center justify-center rounded-full bg-muted lg:flex"><ArrowLeft /></button>
           <button onClick={() => go(1)} aria-label="Weiter" className="absolute -right-14 top-1/2 hidden h-10 w-10 -translate-y-1/2 items-center justify-center rounded-full bg-muted lg:flex"><ArrowRight /></button>
           <div className="grid overflow-hidden bg-card md:grid-cols-[2fr_1fr]">
-            <img src={IMG + s.img} alt={s.title} className="h-[506px] w-full object-cover" />
-            <div className="flex flex-col justify-center p-8">
+            <img src={IMG + s.img} alt={s.title} className="aspect-[16/10] w-full md:aspect-auto md:h-[420px] lg:h-[506px] object-cover" />
+            <div className="flex flex-col justify-center p-5 sm:p-8">
               <p className="text-sm font-medium text-muted-foreground">{s.date}</p>
               <h2 className="mt-2 text-xl font-semibold leading-snug">{s.title}</h2>
               <p className="mt-6 leading-relaxed">{s.text}</p>
@@ -57,10 +57,10 @@ function Index() {
 
         <section className="mt-12">
           <div className="flex items-center justify-between border-b pb-2">
-            <h2 className="flex items-center gap-2 text-2xl font-semibold"><Newspaper className="text-muted-foreground" /> Neuigkeiten</h2>
+            <h2 className="flex items-center gap-2 text-xl font-semibold sm:text-2xl"><Newspaper className="text-muted-foreground" /> Neuigkeiten</h2>
             <Link to="/neuigkeiten" className="flex items-center gap-1 font-medium">Alle Neuigkeiten <ChevronRight className="h-4 w-4" /></Link>
           </div>
-          <div className="mt-6 grid gap-6 md:grid-cols-3">
+          <div className="mt-6 grid gap-4 sm:grid-cols-2 sm:gap-6 lg:grid-cols-3">
             {news.map((n) => (
               <Link key={n.slug} to="/neuigkeiten/$slug" params={{ slug: n.slug }} className="block bg-card">
                 <img src={IMG + n.img} alt="" className="aspect-[16/10] w-full object-cover" />
@@ -74,7 +74,7 @@ function Index() {
           </div>
         </section>
 
-        <section className="mt-16 grid items-center gap-10 bg-card p-8 md:grid-cols-2">
+        <section className="mt-10 sm:mt-16 grid items-center gap-6 bg-card p-5 sm:p-8 md:gap-10 md:grid-cols-2">
           <img src={IMG + "3/f/csm_csm_sprachportal-mockup-laptop-7_1831664450_24b69d3909.jpg"} alt="Nutzer von Sprachportal.at" className="w-full" />
           <div>
             <h2 className="text-2xl font-semibold">Deutsch lernen mit dem ÖIF</h2>
@@ -83,19 +83,19 @@ function Index() {
           </div>
         </section>
 
-        <section className="mt-16">
+        <section className="mt-10 sm:mt-16">
           <h2 className="border-b pb-2 text-2xl font-semibold">Angebote des ÖIF</h2>
-          <div className="mt-6 grid gap-6 sm:grid-cols-2 lg:grid-cols-4">
+          <div className="mt-6 grid grid-cols-2 gap-3 sm:gap-6 lg:grid-cols-4">
             {offers.map((o) => (
               <Link key={o.label} to="/angebote" hash={o.slug} className="group relative block overflow-hidden">
                 <img src={IMG + o.img} alt="" className="aspect-[4/3] w-full object-cover transition group-hover:scale-105" />
-                <span className="absolute inset-x-0 bottom-0 bg-card/95 p-4 font-semibold">{o.label}</span>
+                <span className="absolute inset-x-0 bottom-0 bg-card/95 p-3 text-sm font-semibold sm:p-4 sm:text-base">{o.label}</span>
               </Link>
             ))}
           </div>
         </section>
 
-        <section className="mt-16 bg-card p-8">
+        <section className="mt-10 sm:mt-16 bg-card p-5 sm:p-8">
           <h2 className="text-2xl font-semibold">integration.at</h2>
           <p className="mt-4">Die <b>Informationswebseite für Zuwander/innen</b> ist die digitale Anlaufstelle für Integration in Österreich. Sie informiert mehrsprachig über sämtliche Integrationsmaßnahmen des ÖIF, unter anderem zu:</p>
           <ul className="mt-4 list-disc space-y-1 pl-6 underline">
@@ -104,14 +104,14 @@ function Index() {
           <a href="https://www.integration.at/" className="mt-6 inline-block rounded-full border-2 border-foreground px-4 py-2 font-medium">Zu integration.at</a>
         </section>
 
-        <section className="mt-16">
+        <section className="mt-10 sm:mt-16">
           <h2 className="border-b pb-2 text-2xl font-semibold">Integrationsdaten</h2>
-          <div className="mt-6 flex flex-wrap gap-2">
+          <div className="-mx-4 mt-6 flex gap-2 overflow-x-auto px-4 pb-2 sm:mx-0 sm:flex-wrap sm:px-0">
             {tabs.map((t, k) => (
-              <button key={t} onClick={() => setTab(k)} className={`rounded-full px-4 py-2 text-sm font-medium ${k === tab ? "bg-primary text-primary-foreground" : "bg-muted"}`}>{t}</button>
+              <button key={t} onClick={() => setTab(k)} className={`shrink-0 rounded-full px-4 py-2 text-sm font-medium ${k === tab ? "bg-primary text-primary-foreground" : "bg-muted"}`}>{t}</button>
             ))}
           </div>
-          <div className="mt-6 bg-card p-8">
+          <div className="mt-6 bg-card p-5 sm:p-8">
             <p className="font-semibold">{tabs[tab]}</p>
             <p className="mt-4 leading-relaxed">Die ÖIF-Integrationsdaten bieten aktuelle Statistiken, Zahlen, Daten und Fakten zu Migration und Integration in Österreich. In unterschiedlichen Themenbereichen werden zentrale Entwicklungen anhand <b>interaktiver Grafiken</b> dargestellt. Die Daten werden laufend aktualisiert.</p>
           </div>
@@ -121,13 +121,13 @@ function Index() {
       <SiteFooter />
 
       {cookies && (
-        <div className="fixed inset-x-0 bottom-0 z-40 border-t bg-background py-6">
+        <div className="fixed inset-x-0 bottom-0 z-40 border-t bg-background py-4 sm:py-6">
           <div className="mx-auto max-w-[1264px] px-4">
             <h3 className="font-semibold">Hinweis zu Cookies</h3>
-            <p className="mt-3 text-sm">Unsere Webseite verwendet Cookies. Diese haben zwei Funktionen: Zum einen sind sie erforderlich für die grundlegende Funktionalität unserer Website. Zum anderen können wir mit Hilfe der Cookies unsere Inhalte für Sie immer weiter verbessern. Weitere Informationen finden Sie in unserer <Link to="/datenschutz" className="underline">Datenschutzerklärung</Link> und im <Link to="/impressum" className="underline">Impressum</Link>.</p>
-            <div className="mt-4 flex items-center justify-between">
+            <p className="mt-3 max-h-24 overflow-y-auto text-sm sm:max-h-none">Unsere Webseite verwendet Cookies. Diese haben zwei Funktionen: Zum einen sind sie erforderlich für die grundlegende Funktionalität unserer Website. Zum anderen können wir mit Hilfe der Cookies unsere Inhalte für Sie immer weiter verbessern. Weitere Informationen finden Sie in unserer <Link to="/datenschutz" className="underline">Datenschutzerklärung</Link> und im <Link to="/impressum" className="underline">Impressum</Link>.</p>
+            <div className="mt-4 flex flex-col-reverse gap-3 sm:flex-row sm:items-center sm:justify-between">
               <button className="rounded-full border-2 border-foreground px-3 py-1.5 text-sm font-medium">Einstellungen</button>
-              <div className="flex gap-3">
+              <div className="flex flex-col gap-3 sm:flex-row">
                 <button onClick={() => setCookies(false)} className="rounded-full bg-primary px-4 py-2 text-sm font-semibold text-primary-foreground">Speichern</button>
                 <button onClick={() => setCookies(false)} className="rounded-full bg-primary px-4 py-2 text-sm font-semibold text-primary-foreground">Alle Cookies akzeptieren</button>
               </div>
