@@ -63,7 +63,7 @@ export function SiteHeader() {
               </button>
               {drop === m.label && (
                 <div className="absolute left-0 top-full mt-6 w-72 rounded-2xl bg-card p-2 shadow-lg">
-                  {m.items.map((it) => <Link key={it.label} to={it.to} hash={it.hash} onClick={() => setDrop(null)} className="block rounded-xl px-4 py-3 hover:bg-muted">{it.label}</Link>)}
+                  {m.items.map((it) => <Link key={it.label} to={it.to} {...(it.hash ? { hash: it.hash } : {})} onClick={() => setDrop(null)} className="block rounded-xl px-4 py-3 hover:bg-muted">{it.label}</Link>)}
                 </div>
               )}
             </div>
@@ -96,7 +96,7 @@ export function SiteHeader() {
               <button aria-expanded={acc === m.label} onClick={() => setAcc(acc === m.label ? null : m.label)} className="flex w-full items-center justify-between py-3 text-lg font-medium">
                 {m.label} <ChevronDown className={`h-5 w-5 transition-transform ${acc === m.label ? "rotate-180" : ""}`} />
               </button>
-              {acc === m.label && <div className="pb-2 pl-4">{m.items.map((it) => <Link key={it.label} to={it.to} hash={it.hash} onClick={() => setOpen(false)} className="block py-2 text-muted-foreground">{it.label}</Link>)}</div>}
+              {acc === m.label && <div className="pb-2 pl-4">{m.items.map((it) => <Link key={it.label} to={it.to} {...(it.hash ? { hash: it.hash } : {})} onClick={() => setOpen(false)} className="block py-2 text-muted-foreground">{it.label}</Link>)}</div>}
             </div>
           ))}
           {links.slice(2).map((l) => <Link key={l.to} to={l.to} onClick={() => setOpen(false)} className="border-b py-3 text-lg font-medium" activeProps={{ className: "text-primary" }}>{l.label}</Link>)}
