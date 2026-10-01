@@ -26,12 +26,12 @@ function guardDom() {
   if (w.__gtGuard) return;
   w.__gtGuard = true;
   const rc = Node.prototype.removeChild;
-  Node.prototype.removeChild = function (child: any) {
+  Node.prototype.removeChild = function (this: Node, child: any) {
     if (child.parentNode !== this) return child;
     return rc.call(this, child);
   } as any;
   const ib = Node.prototype.insertBefore;
-  Node.prototype.insertBefore = function (n: any, ref: any) {
+  Node.prototype.insertBefore = function (this: Node, n: any, ref: any) {
     if (ref && ref.parentNode !== this) return n;
     return ib.call(this, n, ref);
   } as any;
