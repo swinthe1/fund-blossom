@@ -10,24 +10,38 @@
 
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as IndexRouteImport } from './routes/index'
+import { Route as AuthenticatedRouteRouteImport } from './routes/_authenticated/route'
 import { Route as AngeboteRouteImport } from './routes/angebote'
+import { Route as AuthRouteImport } from './routes/auth'
 import { Route as DatenschutzRouteImport } from './routes/datenschutz'
 import { Route as DerOeifRouteImport } from './routes/der-oeif'
 import { Route as ImpressumRouteImport } from './routes/impressum'
 import { Route as KontaktRouteImport } from './routes/kontakt'
 import { Route as NeuigkeitenRouteImport } from './routes/neuigkeiten'
 import { Route as PublikationenRouteImport } from './routes/publikationen'
+import { Route as AuthenticatedAdminRouteImport } from './routes/_authenticated/admin'
 import { Route as NeuigkeitenIndexRouteImport } from './routes/neuigkeiten.index'
 import { Route as NeuigkeitenSlugRouteImport } from './routes/neuigkeiten.$slug'
+import { Route as VerifyIndexRouteImport } from './routes/verify.index'
+import { Route as VerifyCertRouteImport } from './routes/verify.$cert'
 
 const IndexRoute = IndexRouteImport.update({
   id: '/',
   path: '/',
   getParentRoute: () => rootRouteImport,
 } as any)
+const AuthenticatedRouteRoute = AuthenticatedRouteRouteImport.update({
+  id: '/_authenticated',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const AngeboteRoute = AngeboteRouteImport.update({
   id: '/angebote',
   path: '/angebote',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const AuthRoute = AuthRouteImport.update({
+  id: '/auth',
+  path: '/auth',
   getParentRoute: () => rootRouteImport,
 } as any)
 const DatenschutzRoute = DatenschutzRouteImport.update({
@@ -60,6 +74,11 @@ const PublikationenRoute = PublikationenRouteImport.update({
   path: '/publikationen',
   getParentRoute: () => rootRouteImport,
 } as any)
+const AuthenticatedAdminRoute = AuthenticatedAdminRouteImport.update({
+  id: '/admin',
+  path: '/admin',
+  getParentRoute: () => AuthenticatedRouteRoute,
+} as any)
 const NeuigkeitenIndexRoute = NeuigkeitenIndexRouteImport.update({
   id: '/',
   path: '/',
@@ -70,90 +89,130 @@ const NeuigkeitenSlugRoute = NeuigkeitenSlugRouteImport.update({
   path: '/$slug',
   getParentRoute: () => NeuigkeitenRoute,
 } as any)
+const VerifyIndexRoute = VerifyIndexRouteImport.update({
+  id: '/verify/',
+  path: '/verify/',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const VerifyCertRoute = VerifyCertRouteImport.update({
+  id: '/verify/$cert',
+  path: '/verify/$cert',
+  getParentRoute: () => rootRouteImport,
+} as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/angebote': typeof AngeboteRoute
+  '/auth': typeof AuthRoute
   '/datenschutz': typeof DatenschutzRoute
   '/der-oeif': typeof DerOeifRoute
   '/impressum': typeof ImpressumRoute
   '/kontakt': typeof KontaktRoute
   '/neuigkeiten': typeof NeuigkeitenRouteWithChildren
   '/publikationen': typeof PublikationenRoute
+  '/admin': typeof AuthenticatedAdminRoute
   '/neuigkeiten/$slug': typeof NeuigkeitenSlugRoute
+  '/verify/$cert': typeof VerifyCertRoute
   '/neuigkeiten/': typeof NeuigkeitenIndexRoute
+  '/verify/': typeof VerifyIndexRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/angebote': typeof AngeboteRoute
+  '/auth': typeof AuthRoute
   '/datenschutz': typeof DatenschutzRoute
   '/der-oeif': typeof DerOeifRoute
   '/impressum': typeof ImpressumRoute
   '/kontakt': typeof KontaktRoute
   '/publikationen': typeof PublikationenRoute
+  '/admin': typeof AuthenticatedAdminRoute
   '/neuigkeiten/$slug': typeof NeuigkeitenSlugRoute
+  '/verify/$cert': typeof VerifyCertRoute
   '/neuigkeiten': typeof NeuigkeitenIndexRoute
+  '/verify': typeof VerifyIndexRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
+  '/_authenticated': typeof AuthenticatedRouteRouteWithChildren
   '/angebote': typeof AngeboteRoute
+  '/auth': typeof AuthRoute
   '/datenschutz': typeof DatenschutzRoute
   '/der-oeif': typeof DerOeifRoute
   '/impressum': typeof ImpressumRoute
   '/kontakt': typeof KontaktRoute
   '/neuigkeiten': typeof NeuigkeitenRouteWithChildren
   '/publikationen': typeof PublikationenRoute
+  '/_authenticated/admin': typeof AuthenticatedAdminRoute
   '/neuigkeiten/$slug': typeof NeuigkeitenSlugRoute
+  '/verify/$cert': typeof VerifyCertRoute
   '/neuigkeiten/': typeof NeuigkeitenIndexRoute
+  '/verify/': typeof VerifyIndexRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
   fullPaths:
     | '/'
     | '/angebote'
+    | '/auth'
     | '/datenschutz'
     | '/der-oeif'
     | '/impressum'
     | '/kontakt'
     | '/neuigkeiten'
     | '/publikationen'
+    | '/admin'
     | '/neuigkeiten/$slug'
+    | '/verify/$cert'
     | '/neuigkeiten/'
+    | '/verify/'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
     | '/angebote'
+    | '/auth'
     | '/datenschutz'
     | '/der-oeif'
     | '/impressum'
     | '/kontakt'
     | '/publikationen'
+    | '/admin'
     | '/neuigkeiten/$slug'
+    | '/verify/$cert'
     | '/neuigkeiten'
+    | '/verify'
   id:
     | '__root__'
     | '/'
+    | '/_authenticated'
     | '/angebote'
+    | '/auth'
     | '/datenschutz'
     | '/der-oeif'
     | '/impressum'
     | '/kontakt'
     | '/neuigkeiten'
     | '/publikationen'
+    | '/_authenticated/admin'
     | '/neuigkeiten/$slug'
+    | '/verify/$cert'
     | '/neuigkeiten/'
+    | '/verify/'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
+  AuthenticatedRouteRoute: typeof AuthenticatedRouteRouteWithChildren
   AngeboteRoute: typeof AngeboteRoute
+  AuthRoute: typeof AuthRoute
   DatenschutzRoute: typeof DatenschutzRoute
   DerOeifRoute: typeof DerOeifRoute
   ImpressumRoute: typeof ImpressumRoute
   KontaktRoute: typeof KontaktRoute
   NeuigkeitenRoute: typeof NeuigkeitenRouteWithChildren
   PublikationenRoute: typeof PublikationenRoute
+  VerifyCertRoute: typeof VerifyCertRoute
+  VerifyIndexRoute: typeof VerifyIndexRoute
 }
 
 declare module '@tanstack/react-router' {
@@ -165,11 +224,25 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof IndexRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/_authenticated': {
+      id: '/_authenticated'
+      path: ''
+      fullPath: '/'
+      preLoaderRoute: typeof AuthenticatedRouteRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/angebote': {
       id: '/angebote'
       path: '/angebote'
       fullPath: '/angebote'
       preLoaderRoute: typeof AngeboteRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/auth': {
+      id: '/auth'
+      path: '/auth'
+      fullPath: '/auth'
+      preLoaderRoute: typeof AuthRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/datenschutz': {
@@ -214,6 +287,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof PublikationenRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/_authenticated/admin': {
+      id: '/_authenticated/admin'
+      path: '/admin'
+      fullPath: '/admin'
+      preLoaderRoute: typeof AuthenticatedAdminRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
     '/neuigkeiten/': {
       id: '/neuigkeiten/'
       path: '/'
@@ -228,8 +308,33 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof NeuigkeitenSlugRouteImport
       parentRoute: typeof NeuigkeitenRoute
     }
+    '/verify/': {
+      id: '/verify/'
+      path: '/verify'
+      fullPath: '/verify/'
+      preLoaderRoute: typeof VerifyIndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/verify/$cert': {
+      id: '/verify/$cert'
+      path: '/verify/$cert'
+      fullPath: '/verify/$cert'
+      preLoaderRoute: typeof VerifyCertRouteImport
+      parentRoute: typeof rootRouteImport
+    }
   }
 }
+
+interface AuthenticatedRouteRouteChildren {
+  AuthenticatedAdminRoute: typeof AuthenticatedAdminRoute
+}
+
+const AuthenticatedRouteRouteChildren: AuthenticatedRouteRouteChildren = {
+  AuthenticatedAdminRoute: AuthenticatedAdminRoute,
+}
+
+const AuthenticatedRouteRouteWithChildren =
+  AuthenticatedRouteRoute._addFileChildren(AuthenticatedRouteRouteChildren)
 
 interface NeuigkeitenRouteChildren {
   NeuigkeitenSlugRoute: typeof NeuigkeitenSlugRoute
@@ -247,13 +352,17 @@ const NeuigkeitenRouteWithChildren = NeuigkeitenRoute._addFileChildren(
 
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
+  AuthenticatedRouteRoute: AuthenticatedRouteRouteWithChildren,
   AngeboteRoute: AngeboteRoute,
+  AuthRoute: AuthRoute,
   DatenschutzRoute: DatenschutzRoute,
   DerOeifRoute: DerOeifRoute,
   ImpressumRoute: ImpressumRoute,
   KontaktRoute: KontaktRoute,
   NeuigkeitenRoute: NeuigkeitenRouteWithChildren,
   PublikationenRoute: PublikationenRoute,
+  VerifyCertRoute: VerifyCertRoute,
+  VerifyIndexRoute: VerifyIndexRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
