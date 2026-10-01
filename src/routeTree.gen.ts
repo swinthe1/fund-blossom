@@ -10,33 +10,150 @@
 
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as IndexRouteImport } from './routes/index'
+import { Route as AngeboteRouteImport } from './routes/angebote'
+import { Route as DatenschutzRouteImport } from './routes/datenschutz'
+import { Route as DerOeifRouteImport } from './routes/der-oeif'
+import { Route as ImpressumRouteImport } from './routes/impressum'
+import { Route as KontaktRouteImport } from './routes/kontakt'
+import { Route as NeuigkeitenRouteImport } from './routes/neuigkeiten'
+import { Route as PublikationenRouteImport } from './routes/publikationen'
+import { Route as NeuigkeitenIndexRouteImport } from './routes/neuigkeiten.index'
+import { Route as NeuigkeitenSlugRouteImport } from './routes/neuigkeiten.$slug'
 
 const IndexRoute = IndexRouteImport.update({
   id: '/',
   path: '/',
   getParentRoute: () => rootRouteImport,
 } as any)
+const AngeboteRoute = AngeboteRouteImport.update({
+  id: '/angebote',
+  path: '/angebote',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const DatenschutzRoute = DatenschutzRouteImport.update({
+  id: '/datenschutz',
+  path: '/datenschutz',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const DerOeifRoute = DerOeifRouteImport.update({
+  id: '/der-oeif',
+  path: '/der-oeif',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ImpressumRoute = ImpressumRouteImport.update({
+  id: '/impressum',
+  path: '/impressum',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const KontaktRoute = KontaktRouteImport.update({
+  id: '/kontakt',
+  path: '/kontakt',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const NeuigkeitenRoute = NeuigkeitenRouteImport.update({
+  id: '/neuigkeiten',
+  path: '/neuigkeiten',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const PublikationenRoute = PublikationenRouteImport.update({
+  id: '/publikationen',
+  path: '/publikationen',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const NeuigkeitenIndexRoute = NeuigkeitenIndexRouteImport.update({
+  id: '/',
+  path: '/',
+  getParentRoute: () => NeuigkeitenRoute,
+} as any)
+const NeuigkeitenSlugRoute = NeuigkeitenSlugRouteImport.update({
+  id: '/$slug',
+  path: '/$slug',
+  getParentRoute: () => NeuigkeitenRoute,
+} as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
+  '/angebote': typeof AngeboteRoute
+  '/datenschutz': typeof DatenschutzRoute
+  '/der-oeif': typeof DerOeifRoute
+  '/impressum': typeof ImpressumRoute
+  '/kontakt': typeof KontaktRoute
+  '/neuigkeiten': typeof NeuigkeitenRouteWithChildren
+  '/publikationen': typeof PublikationenRoute
+  '/neuigkeiten/$slug': typeof NeuigkeitenSlugRoute
+  '/neuigkeiten/': typeof NeuigkeitenIndexRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
+  '/angebote': typeof AngeboteRoute
+  '/datenschutz': typeof DatenschutzRoute
+  '/der-oeif': typeof DerOeifRoute
+  '/impressum': typeof ImpressumRoute
+  '/kontakt': typeof KontaktRoute
+  '/publikationen': typeof PublikationenRoute
+  '/neuigkeiten/$slug': typeof NeuigkeitenSlugRoute
+  '/neuigkeiten': typeof NeuigkeitenIndexRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
+  '/angebote': typeof AngeboteRoute
+  '/datenschutz': typeof DatenschutzRoute
+  '/der-oeif': typeof DerOeifRoute
+  '/impressum': typeof ImpressumRoute
+  '/kontakt': typeof KontaktRoute
+  '/neuigkeiten': typeof NeuigkeitenRouteWithChildren
+  '/publikationen': typeof PublikationenRoute
+  '/neuigkeiten/$slug': typeof NeuigkeitenSlugRoute
+  '/neuigkeiten/': typeof NeuigkeitenIndexRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/'
+  fullPaths:
+    | '/'
+    | '/angebote'
+    | '/datenschutz'
+    | '/der-oeif'
+    | '/impressum'
+    | '/kontakt'
+    | '/neuigkeiten'
+    | '/publikationen'
+    | '/neuigkeiten/$slug'
+    | '/neuigkeiten/'
   fileRoutesByTo: FileRoutesByTo
-  to: '/'
-  id: '__root__' | '/'
+  to:
+    | '/'
+    | '/angebote'
+    | '/datenschutz'
+    | '/der-oeif'
+    | '/impressum'
+    | '/kontakt'
+    | '/publikationen'
+    | '/neuigkeiten/$slug'
+    | '/neuigkeiten'
+  id:
+    | '__root__'
+    | '/'
+    | '/angebote'
+    | '/datenschutz'
+    | '/der-oeif'
+    | '/impressum'
+    | '/kontakt'
+    | '/neuigkeiten'
+    | '/publikationen'
+    | '/neuigkeiten/$slug'
+    | '/neuigkeiten/'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
+  AngeboteRoute: typeof AngeboteRoute
+  DatenschutzRoute: typeof DatenschutzRoute
+  DerOeifRoute: typeof DerOeifRoute
+  ImpressumRoute: typeof ImpressumRoute
+  KontaktRoute: typeof KontaktRoute
+  NeuigkeitenRoute: typeof NeuigkeitenRouteWithChildren
+  PublikationenRoute: typeof PublikationenRoute
 }
 
 declare module '@tanstack/react-router' {
@@ -48,11 +165,95 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof IndexRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/angebote': {
+      id: '/angebote'
+      path: '/angebote'
+      fullPath: '/angebote'
+      preLoaderRoute: typeof AngeboteRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/datenschutz': {
+      id: '/datenschutz'
+      path: '/datenschutz'
+      fullPath: '/datenschutz'
+      preLoaderRoute: typeof DatenschutzRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/der-oeif': {
+      id: '/der-oeif'
+      path: '/der-oeif'
+      fullPath: '/der-oeif'
+      preLoaderRoute: typeof DerOeifRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/impressum': {
+      id: '/impressum'
+      path: '/impressum'
+      fullPath: '/impressum'
+      preLoaderRoute: typeof ImpressumRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/kontakt': {
+      id: '/kontakt'
+      path: '/kontakt'
+      fullPath: '/kontakt'
+      preLoaderRoute: typeof KontaktRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/neuigkeiten': {
+      id: '/neuigkeiten'
+      path: '/neuigkeiten'
+      fullPath: '/neuigkeiten'
+      preLoaderRoute: typeof NeuigkeitenRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/publikationen': {
+      id: '/publikationen'
+      path: '/publikationen'
+      fullPath: '/publikationen'
+      preLoaderRoute: typeof PublikationenRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/neuigkeiten/': {
+      id: '/neuigkeiten/'
+      path: '/'
+      fullPath: '/neuigkeiten/'
+      preLoaderRoute: typeof NeuigkeitenIndexRouteImport
+      parentRoute: typeof NeuigkeitenRoute
+    }
+    '/neuigkeiten/$slug': {
+      id: '/neuigkeiten/$slug'
+      path: '/$slug'
+      fullPath: '/neuigkeiten/$slug'
+      preLoaderRoute: typeof NeuigkeitenSlugRouteImport
+      parentRoute: typeof NeuigkeitenRoute
+    }
   }
 }
 
+interface NeuigkeitenRouteChildren {
+  NeuigkeitenSlugRoute: typeof NeuigkeitenSlugRoute
+  NeuigkeitenIndexRoute: typeof NeuigkeitenIndexRoute
+}
+
+const NeuigkeitenRouteChildren: NeuigkeitenRouteChildren = {
+  NeuigkeitenSlugRoute: NeuigkeitenSlugRoute,
+  NeuigkeitenIndexRoute: NeuigkeitenIndexRoute,
+}
+
+const NeuigkeitenRouteWithChildren = NeuigkeitenRoute._addFileChildren(
+  NeuigkeitenRouteChildren,
+)
+
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
+  AngeboteRoute: AngeboteRoute,
+  DatenschutzRoute: DatenschutzRoute,
+  DerOeifRoute: DerOeifRoute,
+  ImpressumRoute: ImpressumRoute,
+  KontaktRoute: KontaktRoute,
+  NeuigkeitenRoute: NeuigkeitenRouteWithChildren,
+  PublikationenRoute: PublikationenRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)

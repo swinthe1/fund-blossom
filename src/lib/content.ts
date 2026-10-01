@@ -1,0 +1,20 @@
+export const IMG = "https://www.integrationsfonds.at/fileadmin/_processed_/";
+
+export type Article = { slug: string; img: string; date: string; title: string; text: string; body: string[] };
+
+export const articles: Article[] = [
+  { slug: "karriere-im-oeif", img: "d/0/csm_Adrian_Almasan-0154_2e799f6fb1.jpg", date: "25.09.2026", title: "Karriere im ÖIF: Talente von heute werden zu Führungskräften von morgen", text: "9 von 10 Führungskräften haben ihre Karriere als Mitarbeiter/in im ÖIF begonnen.", body: ["Der ÖIF setzt bei der Besetzung von Führungspositionen stark auf interne Entwicklung.", "Programme für Nachwuchsführungskräfte und Mentoring begleiten Mitarbeiter/innen auf ihrem beruflichen Weg."] },
+  { slug: "forschungsbericht-neets", img: "1/c/csm_FB_NEETs_Website_Bild_74d09b4b1d.jpg", date: "25.09.2026", title: "Neuer ÖIF-Forschungsbericht: Migrantische Jugendliche der ersten Generation deutlich häufiger ohne Ausbildung oder Arbeit", text: "27 % der Jugendlichen der ersten Generation weder in Beschäftigung, Ausbildung noch Schulung.", body: ["Der Bericht wertet verfügbare Daten aus 2022 aus.", "Er zeigt deutliche Unterschiede zwischen Jugendlichen mit und ohne Migrationshintergrund."] },
+  { slug: "gewaltpraevention-dialog", img: "7/2/csm_20260924_web46__c_Soldatenko-OEIF_3c3617f386.jpg", date: "24.09.2026", title: "Frauen und Mädchen schützen: ÖIF-Expert/innen-Dialog zur Gewaltprävention", text: "Fachleute aus Bildung, Sicherheit, Justiz und Beratung im Austausch.", body: ["Die Gesprächsreihe stärkt die Zusammenarbeit zwischen Institutionen.", "Im Fokus stehen Präventionsansätze im Integrationskontext."] },
+  { slug: "frauen-und-vielfalt", img: "c/7/csm_20260921_web11__c_Soldatenko-OEIF_6eac775efa.jpg", date: "19.09.2026", title: "Frauen und Vielfalt prägen den ÖIF", text: "2 von 3 Mitarbeiter/innen sind Frauen, rund 60 % haben Migrationshintergrund.", body: ["Der ÖIF wurde mehrfach für Frauenförderung und Familienfreundlichkeit ausgezeichnet."] },
+  { slug: "befragung-dialekt", img: "c/e/csm_20250905_print68_c_Soldatenko_OEIF_4cc43a2a5a.jpg", date: "14.09.2026", title: "ÖIF-Befragung: 8 von 10 Teilnehmer/innen befürworten Dialekt im Unterricht", text: "Befragung unter rund 1.400 Kursteilnehmer/innen.", body: ["Regionale Sprachvarianten sind für Alltag und Beruf besonders relevant.", "Die Deutschkurse werden als hilfreich im Alltag bewertet."] },
+  { slug: "statistisches-jahrbuch-2026", img: "e/c/csm_Website_Bild_Statistisches_Jahrbuch_2026_a7c0789837.jpg", date: "11.09.2026", title: "Statistisches Jahrbuch „Migration & Integration“: Anteil steigt auf 28,2 %", text: "Umfassende Daten von Statistik Austria und ÖIF.", body: ["Asylanträge und -gewährungen sind im Vergleich zum Vorjahr gesunken.", "Das Jahrbuch bündelt zentrale Kennzahlen zu Migration und Integration."] },
+  { slug: "factsheet-schule", img: "8/e/csm_Website_Bild_Factsheet_Schule_und_Integration_2026-02_7bb088672d.jpg", date: "05.09.2026", title: "Neues ÖIF-Factsheet: 26 % der Schüler/innen mit nicht-deutscher Umgangssprache", text: "21 % der Schüler/innen haben eine ausländische Staatsangehörigkeit.", body: ["Das Factsheet zeigt regionale Unterschiede beim Deutschförderbedarf."] },
+];
+
+export const offers = [
+  { slug: "integrationsmassnahmen", label: "Integrationsmaßnahmen", img: "5/0/csm_Beratung_IZ_Wien_2_OEIF_Unger_d7413b2d29.jpg", text: "Beratung, Werte- und Orientierungskurse sowie Unterstützung für Frauen und Männer in allen Bundesländern." },
+  { slug: "deutsch-lernen", label: "Deutsch lernen", img: "0/e/csm_20240506_Praesentation_Sprachportal_OEIF_Slider_cd942bf4bb.jpg", text: "Deutschkurse an rund 250 Standorten, das Online-Angebot sprachportal.at sowie Deutsch- und Integrationsprüfungen." },
+  { slug: "veranstaltungen", label: "Veranstaltungen", img: "5/6/csm_20231002-print3_b7175806f0.jpg", text: "Diskussionen, Fachtagungen und Gesprächsreihen rund um Integration in Österreich." },
+  { slug: "weiterbildungen", label: "Weiterbildungen", img: "f/1/csm_WOK_Kurs_2024_OEIF_223dcb6e50.jpg", text: "Seminare und Schulungen für Multiplikator/innen aus Bildung, Verwaltung und Zivilgesellschaft." },
+];
