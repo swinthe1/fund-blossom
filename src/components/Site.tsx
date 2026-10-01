@@ -21,7 +21,23 @@ const menus: { label: string; to: Sub["to"]; items: Sub[] }[] = [
 ];
 const languages = ["Deutsch", "English", "العربية", "فارسی", "Українська"];
 const langCodes: Record<string, string> = { Deutsch: "de", English: "en", "العربية": "ar", "فارسی": "fa", "Українська": "uk" };
+function guardDom() {
+  const w = window as any;
+  if (w.__gtGuard) return;
+  w.__gtGuard = true;
+  const rc = Node.prototype.removeChild;
+  Node.prototype.removeChild = function (child: any) {
+    if (child.parentNode !== this) return child;
+    return rc.call(this, child);
+  } as any;
+  const ib = Node.prototype.insertBefore;
+  Node.prototype.insertBefore = function (n: any, ref: any) {
+    if (ref && ref.parentNode !== this) return n;
+    return ib.call(this, n, ref);
+  } as any;
+}
 function loadTranslate() {
+  guardDom();
   if (document.getElementById("gt-script")) return;
   const w = window as any;
   const box = document.createElement("div");
@@ -78,7 +94,17 @@ export function SiteHeader() {
         ? `googtrans=;expires=Thu, 01 Jan 1970 00:00:00 GMT;path=/${d}`
         : `googtrans=/de/${code};path=/${d}`;
     }
-    location.reload();
+    if (code === "de") { if (lang !== "Deutsch") window.location.href = window.location.pathname; return; }
+    setLangState(l);
+    document.documentElement.dir = code === "ar" || code === "fa" ? "rtl" : "ltr";
+    loadTranslate();
+    let tries = 0;
+    const apply = () => {
+      const sel = document.querySelector<HTMLSelectElement>(".goog-te-combo");
+      if (sel) { sel.value = code; sel.dispatchEvent(new Event("change")); }
+      else if (tries++ < 50) setTimeout(apply, 200);
+    };
+    apply();
   };
   const [search, setSearch] = useState(false);
   const ref = useOutside(() => setDrop(null));
