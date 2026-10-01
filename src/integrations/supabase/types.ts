@@ -14,16 +14,220 @@ export type Database = {
   }
   public: {
     Tables: {
-      [_ in never]: never
+      certificate_verifications: {
+        Row: {
+          browser: string | null
+          certificate_number: string
+          city: string | null
+          country: string | null
+          created_at: string
+          device_type: string | null
+          id: string
+          ip: string | null
+          os: string | null
+          region: string | null
+          user_agent: string | null
+        }
+        Insert: {
+          browser?: string | null
+          certificate_number: string
+          city?: string | null
+          country?: string | null
+          created_at?: string
+          device_type?: string | null
+          id?: string
+          ip?: string | null
+          os?: string | null
+          region?: string | null
+          user_agent?: string | null
+        }
+        Update: {
+          browser?: string | null
+          certificate_number?: string
+          city?: string | null
+          country?: string | null
+          created_at?: string
+          device_type?: string | null
+          id?: string
+          ip?: string | null
+          os?: string | null
+          region?: string | null
+          user_agent?: string | null
+        }
+        Relationships: []
+      }
+      certificates: {
+        Row: {
+          birth_country: string
+          birth_date: string
+          certificate_number: string
+          completed: boolean
+          created_at: string
+          email: string | null
+          email_send_count: number | null
+          email_sent: boolean
+          exam_date: string
+          exam_level: string
+          examiner_1: string | null
+          examiner_2: string | null
+          first_name: string
+          id: string
+          last_name: string
+          owner_id: string | null
+          points_hoeren_lesen: number | null
+          points_schreiben: number | null
+          points_sprechen: number | null
+          points_werte: number | null
+          result: string
+          signed_at: string | null
+          updated_at: string
+        }
+        Insert: {
+          birth_country: string
+          birth_date: string
+          certificate_number: string
+          completed?: boolean
+          created_at?: string
+          email?: string | null
+          email_send_count?: number | null
+          email_sent?: boolean
+          exam_date: string
+          exam_level?: string
+          examiner_1?: string | null
+          examiner_2?: string | null
+          first_name: string
+          id?: string
+          last_name: string
+          owner_id?: string | null
+          points_hoeren_lesen?: number | null
+          points_schreiben?: number | null
+          points_sprechen?: number | null
+          points_werte?: number | null
+          result?: string
+          signed_at?: string | null
+          updated_at?: string
+        }
+        Update: {
+          birth_country?: string
+          birth_date?: string
+          certificate_number?: string
+          completed?: boolean
+          created_at?: string
+          email?: string | null
+          email_send_count?: number | null
+          email_sent?: boolean
+          exam_date?: string
+          exam_level?: string
+          examiner_1?: string | null
+          examiner_2?: string | null
+          first_name?: string
+          id?: string
+          last_name?: string
+          owner_id?: string | null
+          points_hoeren_lesen?: number | null
+          points_schreiben?: number | null
+          points_sprechen?: number | null
+          points_werte?: number | null
+          result?: string
+          signed_at?: string | null
+          updated_at?: string
+        }
+        Relationships: []
+      }
+      site_settings: {
+        Row: {
+          id: number
+          maintenance_enabled: boolean
+          maintenance_message: string
+          maintenance_title: string
+          updated_at: string
+        }
+        Insert: {
+          id?: number
+          maintenance_enabled?: boolean
+          maintenance_message?: string
+          maintenance_title?: string
+          updated_at?: string
+        }
+        Update: {
+          id?: number
+          maintenance_enabled?: boolean
+          maintenance_message?: string
+          maintenance_title?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
+      user_roles: {
+        Row: {
+          created_at: string
+          id: string
+          role: Database["public"]["Enums"]["app_role"]
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          role: Database["public"]["Enums"]["app_role"]
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          role?: Database["public"]["Enums"]["app_role"]
+          user_id?: string
+        }
+        Relationships: []
+      }
     }
     Views: {
       [_ in never]: never
     }
     Functions: {
-      [_ in never]: never
+      get_certificate_by_number: {
+        Args: { _number: string }
+        Returns: {
+          birth_country: string
+          birth_date: string
+          certificate_number: string
+          completed: boolean
+          created_at: string
+          email: string | null
+          email_send_count: number | null
+          email_sent: boolean
+          exam_date: string
+          exam_level: string
+          examiner_1: string | null
+          examiner_2: string | null
+          first_name: string
+          id: string
+          last_name: string
+          owner_id: string | null
+          points_hoeren_lesen: number | null
+          points_schreiben: number | null
+          points_sprechen: number | null
+          points_werte: number | null
+          result: string
+          signed_at: string | null
+          updated_at: string
+        }[]
+        SetofOptions: {
+          from: "*"
+          to: "certificates"
+          isOneToOne: false
+          isSetofReturn: true
+        }
+      }
+      has_role: {
+        Args: {
+          _role: Database["public"]["Enums"]["app_role"]
+          _user_id: string
+        }
+        Returns: boolean
+      }
     }
     Enums: {
-      [_ in never]: never
+      app_role: "admin" | "moderator" | "user"
     }
     CompositeTypes: {
       [_ in never]: never
@@ -150,6 +354,8 @@ export type CompositeTypes<
 
 export const Constants = {
   public: {
-    Enums: {},
+    Enums: {
+      app_role: ["admin", "moderator", "user"],
+    },
   },
 } as const
