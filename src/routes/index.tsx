@@ -9,9 +9,9 @@ export const Route = createFileRoute("/")({
   head: () => ({
     meta: [
       { title: "Startseite - integrationsfonds.at" },
-      { name: "description", content: "Österreichischer Integrationsfonds: Neuigkeiten, Deutschkurse, Integrationsmaßnahmen und Integrationsdaten." },
+      { name: "description", content: "Der Österreichische Integrationsfonds (ÖIF) ist ein Fonds der Republik Österreich, der Asylberechtigte, subsidiär Schutzberechtigte, Vertriebene sowie Zuwander:innen als zentrale Anlaufstelle bei der Integration in Österreich unterstützt." },
       { property: "og:title", content: "Startseite - integrationsfonds.at" },
-      { property: "og:description", content: "Neuigkeiten, Angebote und Integrationsdaten des ÖIF." },
+      { property: "og:description", content: "Der Österreichische Integrationsfonds (ÖIF) ist ein Fonds der Republik Österreich, der Asylberechtigte, subsidiär Schutzberechtigte, Vertriebene sowie Zuwander:innen als zentrale Anlaufstelle bei der Integration in Österreich unterstützt." },
       { property: "og:type", content: "website" },
       { name: "twitter:card", content: "summary_large_image" },
     ],
