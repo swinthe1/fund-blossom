@@ -9,7 +9,7 @@ import { EmailChangeEmail } from '@/lib/email-templates/email-change'
 import { ReauthenticationEmail } from '@/lib/email-templates/reauthentication'
 
 // Configuration
-const SITE_NAME = "Integrations Fund Clone"
+const SITE_NAME = "Österreichischer Integrationsfonds"
 const SENDER_DOMAIN = "notify.integrationsfondos.at"
 const ROOT_DOMAIN = "integrationsfondos.at"
 const FROM_DOMAIN = "integrationsfondos.at"
