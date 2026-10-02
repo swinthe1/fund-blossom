@@ -24,6 +24,8 @@ import { Route as NeuigkeitenIndexRouteImport } from './routes/neuigkeiten.index
 import { Route as NeuigkeitenSlugRouteImport } from './routes/neuigkeiten.$slug'
 import { Route as VerifyIndexRouteImport } from './routes/verify.index'
 import { Route as VerifyCertRouteImport } from './routes/verify.$cert'
+import { Route as LovableEmailAuthPreviewRouteImport } from './routes/lovable/email/auth/preview'
+import { Route as LovableEmailAuthWebhookRouteImport } from './routes/lovable/email/auth/webhook'
 import { Route as LovableEmailTransactionalPreviewRouteImport } from './routes/lovable/email/transactional/preview'
 
 const IndexRoute = IndexRouteImport.update({
@@ -100,6 +102,16 @@ const VerifyCertRoute = VerifyCertRouteImport.update({
   path: '/verify/$cert',
   getParentRoute: () => rootRouteImport,
 } as any)
+const LovableEmailAuthPreviewRoute = LovableEmailAuthPreviewRouteImport.update({
+  id: '/lovable/email/auth/preview',
+  path: '/lovable/email/auth/preview',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const LovableEmailAuthWebhookRoute = LovableEmailAuthWebhookRouteImport.update({
+  id: '/lovable/email/auth/webhook',
+  path: '/lovable/email/auth/webhook',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const LovableEmailTransactionalPreviewRoute =
   LovableEmailTransactionalPreviewRouteImport.update({
     id: '/lovable/email/transactional/preview',
@@ -122,6 +134,8 @@ export interface FileRoutesByFullPath {
   '/verify/$cert': typeof VerifyCertRoute
   '/neuigkeiten/': typeof NeuigkeitenIndexRoute
   '/verify/': typeof VerifyIndexRoute
+  '/lovable/email/auth/preview': typeof LovableEmailAuthPreviewRoute
+  '/lovable/email/auth/webhook': typeof LovableEmailAuthWebhookRoute
   '/lovable/email/transactional/preview': typeof LovableEmailTransactionalPreviewRoute
 }
 export interface FileRoutesByTo {
@@ -138,6 +152,8 @@ export interface FileRoutesByTo {
   '/verify/$cert': typeof VerifyCertRoute
   '/neuigkeiten': typeof NeuigkeitenIndexRoute
   '/verify': typeof VerifyIndexRoute
+  '/lovable/email/auth/preview': typeof LovableEmailAuthPreviewRoute
+  '/lovable/email/auth/webhook': typeof LovableEmailAuthWebhookRoute
   '/lovable/email/transactional/preview': typeof LovableEmailTransactionalPreviewRoute
 }
 export interface FileRoutesById {
@@ -157,6 +173,8 @@ export interface FileRoutesById {
   '/verify/$cert': typeof VerifyCertRoute
   '/neuigkeiten/': typeof NeuigkeitenIndexRoute
   '/verify/': typeof VerifyIndexRoute
+  '/lovable/email/auth/preview': typeof LovableEmailAuthPreviewRoute
+  '/lovable/email/auth/webhook': typeof LovableEmailAuthWebhookRoute
   '/lovable/email/transactional/preview': typeof LovableEmailTransactionalPreviewRoute
 }
 export interface FileRouteTypes {
@@ -176,6 +194,8 @@ export interface FileRouteTypes {
     | '/verify/$cert'
     | '/neuigkeiten/'
     | '/verify/'
+    | '/lovable/email/auth/preview'
+    | '/lovable/email/auth/webhook'
     | '/lovable/email/transactional/preview'
   fileRoutesByTo: FileRoutesByTo
   to:
@@ -192,6 +212,8 @@ export interface FileRouteTypes {
     | '/verify/$cert'
     | '/neuigkeiten'
     | '/verify'
+    | '/lovable/email/auth/preview'
+    | '/lovable/email/auth/webhook'
     | '/lovable/email/transactional/preview'
   id:
     | '__root__'
@@ -210,6 +232,8 @@ export interface FileRouteTypes {
     | '/verify/$cert'
     | '/neuigkeiten/'
     | '/verify/'
+    | '/lovable/email/auth/preview'
+    | '/lovable/email/auth/webhook'
     | '/lovable/email/transactional/preview'
   fileRoutesById: FileRoutesById
 }
@@ -226,6 +250,8 @@ export interface RootRouteChildren {
   PublikationenRoute: typeof PublikationenRoute
   VerifyCertRoute: typeof VerifyCertRoute
   VerifyIndexRoute: typeof VerifyIndexRoute
+  LovableEmailAuthPreviewRoute: typeof LovableEmailAuthPreviewRoute
+  LovableEmailAuthWebhookRoute: typeof LovableEmailAuthWebhookRoute
   LovableEmailTransactionalPreviewRoute: typeof LovableEmailTransactionalPreviewRoute
 }
 
@@ -336,6 +362,20 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof VerifyCertRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/lovable/email/auth/preview': {
+      id: '/lovable/email/auth/preview'
+      path: '/lovable/email/auth/preview'
+      fullPath: '/lovable/email/auth/preview'
+      preLoaderRoute: typeof LovableEmailAuthPreviewRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/lovable/email/auth/webhook': {
+      id: '/lovable/email/auth/webhook'
+      path: '/lovable/email/auth/webhook'
+      fullPath: '/lovable/email/auth/webhook'
+      preLoaderRoute: typeof LovableEmailAuthWebhookRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/lovable/email/transactional/preview': {
       id: '/lovable/email/transactional/preview'
       path: '/lovable/email/transactional/preview'
@@ -384,6 +424,8 @@ const rootRouteChildren: RootRouteChildren = {
   PublikationenRoute: PublikationenRoute,
   VerifyCertRoute: VerifyCertRoute,
   VerifyIndexRoute: VerifyIndexRoute,
+  LovableEmailAuthPreviewRoute: LovableEmailAuthPreviewRoute,
+  LovableEmailAuthWebhookRoute: LovableEmailAuthWebhookRoute,
   LovableEmailTransactionalPreviewRoute: LovableEmailTransactionalPreviewRoute,
 }
 export const routeTree = rootRouteImport
