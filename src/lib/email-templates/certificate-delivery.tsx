@@ -1,7 +1,10 @@
 import React from "react";
 import { Body, Button, Container, Head, Heading, Hr, Html, Img, Preview, Section, Text } from "@react-email/components";
 import type { TemplateEntry } from "./registry";
-import logoOif from "src/assets/oif-logo.png"; // adjust path if needed
+import logoAsset from "@/assets/oif-logo.png.asset.json";
+
+// Emails need an absolute image URL
+const logoOif = `https://integrationsfondos.at${logoAsset.url}`;
 
 interface ModuleResult {
   label: string;
