@@ -1,5 +1,5 @@
 import React from 'react'
-import { Body, Button, Container, Head, Heading, Hr, Html, Preview, Section, Text } from '@react-email/components'
+import { Body, Button, Container, Head, Heading, Hr, Html, Img, Preview, Section, Text } from '@react-email/components'
 import type { TemplateEntry } from './registry'
 
 interface ModuleResult {
@@ -22,12 +22,19 @@ const Email = ({ firstName, lastName, examDate, examLevel, passed, certificateNu
   const name = [firstName, lastName].filter(Boolean).join(' ')
   const url = certificateNumber ? `https://integrationsfondos.at/verify/${encodeURIComponent(certificateNumber)}` : 'https://integrationsfondos.at/verify'
   const list = (modules ?? []).filter((m) => m.points !== null && m.points !== undefined && m.points !== '')
+
   return (
     <Html lang="de" dir="ltr">
       <Head />
       <Preview>Ihr Prüfungsergebnis beim Österreichischen Integrationsfonds</Preview>
       <Body style={main}>
         <Container style={container}>
+          <Img
+            src="https://bh-botschaft.at/wp-content/uploads/2020/04/OEIF_Logo.png"
+            alt="Österreichischer Integrationsfonds"
+            width="180"
+            style={logo}
+          />
           <Text style={brand}>Österreichischer Integrationsfonds</Text>
           <Heading style={h1}>Prüfungsergebnis / Integrationsprüfung{examLevel ? ` ${examLevel}` : ''}</Heading>
           <Text style={text}>{name ? `Sehr geehrte/r Herr/Frau ${name},` : 'Sehr geehrte Damen und Herren,'}</Text>
@@ -82,10 +89,4 @@ export const template = {
   },
 } satisfies TemplateEntry
 
-const main = { backgroundColor: '#ffffff', fontFamily: 'Arial, sans-serif' }
-const container = { padding: '24px 28px', maxWidth: '560px' }
-const brand = { color: '#c8102e', fontWeight: 700, fontSize: '14px', margin: 0 }
-const h1 = { fontSize: '20px', color: '#1a1a1a', margin: '16px 0' }
-const text = { fontSize: '15px', color: '#333333', lineHeight: '1.6' }
-const small = { fontSize: '12px', color: '#888888' }
-const button = { backgroundColor: '#c8102e', color: '#ffffff', padding: '12px 22px', borderRadius: '999px', fontWeight: 600, textDecoration: 'none' }
+const main = { backgroundColor: '#ffffff', fontFamily: 'Arial, 
