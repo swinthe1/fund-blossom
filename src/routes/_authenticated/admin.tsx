@@ -2,21 +2,35 @@
 import { createFileRoute, useNavigate, Link } from "@tanstack/react-router";
 import { useEffect, useMemo, useState } from "react";
 import {
-  Eye, BarChart3, Link2, Pencil, Trash2, Check, Send, LogOut, ExternalLink,
-  Search, Plus, ArrowLeft, FileText, Mail, CheckCircle2, Clock, ShieldCheck, X,
+  Eye,
+  BarChart3,
+  Link2,
+  Pencil,
+  Trash2,
+  Check,
+  Send,
+  LogOut,
+  ExternalLink,
+  Search,
+  Plus,
+  ArrowLeft,
+  FileText,
+  Mail,
+  CheckCircle2,
+  Clock,
+  ShieldCheck,
+  X,
 } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { sendTransactionalEmail } from "@/lib/email/send";
 import { evaluatePass, autofillPointsForLevel } from "@/lib/exam/thresholds";
 import { toast } from "sonner";
 import { MaintenanceSettings } from "@/components/MaintenanceSettings";
+import { jsPDF } from "jspdf";
 
 export const Route = createFileRoute("/_authenticated/admin")({
   head: () => ({
-    meta: [
-      { title: "Admin — Zertifikate verwalten" },
-      { name: "robots", content: "noindex" },
-    ],
+    meta: [{ title: "Admin — Zertifikate verwalten" }, { name: "robots", content: "noindex" }],
   }),
   component: AdminPage,
 });
@@ -74,6 +88,166 @@ const EMPTY = {
   email: "",
 };
 
+/* ──────────────────────────── PDF Generator (A4) ──────────────────────────── */
+function downloadCertificatePdf(c: Certificate) {
+  const doc = new jsPDF({
+    orientation: "portrait",
+    unit: "mm",
+    format: "a4",
+  });
+
+  const pageWidth = doc.internal.pageSize.getWidth(); // 210 mm
+  const pageHeight = doc.internal.pageSize.getHeight(); // 297 mm
+  const margin = 20;
+
+  // Background
+  doc.setFillColor(255, 255, 255);
+  doc.rect(0, 0, pageWidth, pageHeight, "F");
+
+  // Outer border
+  doc.setDrawColor(30, 64, 175); // indigo-800
+  doc.setLineWidth(1.5);
+  doc.rect(12, 12, pageWidth - 24, pageHeight - 24);
+
+  // Inner border
+  doc.setLineWidth(0.4);
+  doc.rect(15, 15, pageWidth - 30, pageHeight - 30);
+
+  // Header
+  doc.setFont("helvetica", "bold");
+  doc.setFontSize(11);
+  doc.setTextColor(30, 64, 175);
+  doc.text("ÖSTERREICHISCHER INTEGRATIONSFONDS", pageWidth / 2, 28, { align: "center" });
+
+  doc.setFontSize(9);
+  doc.setTextColor(80, 80, 80);
+  doc.text("ÖIF – Zertifikat Deutsch", pageWidth / 2, 35, { align: "center" });
+
+  // Title
+  doc.setFont("helvetica", "bold");
+  doc.setFontSize(22);
+  doc.setTextColor(15, 23, 42);
+  doc.text("ZERTIFIKAT", pageWidth / 2, 55, { align: "center" });
+
+  // Level badge
+  doc.setFillColor(30, 64, 175);
+  doc.roundedRect(pageWidth / 2 - 22, 62, 44, 14, 3, 3, "F");
+  doc.setTextColor(255, 255, 255);
+  doc.setFontSize(16);
+  doc.text(c.result || c.exam_level, pageWidth / 2, 72, { align: "center" });
+
+  // Certificate number
+  doc.setFont("helvetica", "normal");
+  doc.setFontSize(10);
+  doc.setTextColor(100, 100, 100);
+  doc.text(`Zertifikatsnummer: ${c.certificate_number}`, pageWidth / 2, 85, { align: "center" });
+
+  // Horizontal line
+  doc.setDrawColor(200, 200, 200);
+  doc.setLineWidth(0.3);
+  doc.line(margin, 92, pageWidth - margin, 92);
+
+  // Participant data
+  let y = 105;
+  const leftCol = margin + 5;
+  const labelWidth = 55;
+
+  const addRow = (label: string, value: string) => {
+    doc.setFont("helvetica", "bold");
+    doc.setFontSize(10);
+    doc.setTextColor(60, 60, 60);
+    doc.text(label, leftCol, y);
+    doc.setFont("helvetica", "normal");
+    doc.setTextColor(15, 23, 42);
+    doc.text(value || "—", leftCol + labelWidth, y);
+    y += 9;
+  };
+
+  addRow("Vorname:", c.first_name);
+  addRow("Nachname:", c.last_name);
+  addRow("Geburtsdatum:", c.birth_date);
+  addRow("Geburtsland:", c.birth_country);
+  addRow("Prüfungsdatum:", c.exam_date);
+  addRow("Prüfungsstufe:", c.exam_level);
+
+  y += 6;
+  doc.setDrawColor(200, 200, 200);
+  doc.line(margin, y, pageWidth - margin, y);
+  y += 12;
+
+  // Points section
+  doc.setFont("helvetica", "bold");
+  doc.setFontSize(11);
+  doc.setTextColor(30, 64, 175);
+  doc.text("Prüfungsergebnis", leftCol, y);
+  y += 10;
+
+  const points = [
+    { label: "Hören / Lesen", value: c.points_hoeren_lesen },
+    { label: "Schreiben", value: c.points_schreiben },
+    { label: "Sprechen", value: c.points_sprechen },
+  ];
+
+  if (c.exam_level !== "C1" && c.exam_level !== "C2") {
+    points.push({ label: "Werte & Orientierung", value: c.points_werte });
+  }
+
+  points.forEach((p) => {
+    doc.setFont("helvetica", "normal");
+    doc.setFontSize(10);
+    doc.setTextColor(60, 60, 60);
+    doc.text(p.label, leftCol, y);
+    doc.setFont("helvetica", "bold");
+    doc.setTextColor(15, 23, 42);
+    doc.text(p.value != null ? String(p.value) : "—", leftCol + 70, y);
+    y += 8;
+  });
+
+  // Overall result
+  y += 6;
+  const passed = evaluatePass(c.exam_level, {
+    pointsHoerenLesen: c.points_hoeren_lesen,
+    pointsSchreiben: c.points_schreiben,
+    pointsSprechen: c.points_sprechen,
+    pointsWerte: c.points_werte,
+  }).passed;
+
+  doc.setFont("helvetica", "bold");
+  doc.setFontSize(12);
+  doc.setTextColor(passed ? 5 : 180, passed ? 150 : 30, passed ? 105 : 30);
+  doc.text(passed ? `BESTANDEN – Niveau ${c.result}` : `NICHT BESTANDEN`, pageWidth / 2, y, { align: "center" });
+
+  // Examiners
+  y += 18;
+  doc.setDrawColor(200, 200, 200);
+  doc.line(margin, y, pageWidth - margin, y);
+  y += 12;
+
+  doc.setFont("helvetica", "normal");
+  doc.setFontSize(9);
+  doc.setTextColor(80, 80, 80);
+  doc.text(`Prüfer/in 1: ${c.examiner_1 || "—"}`, leftCol, y);
+  doc.text(`Prüfer/in 2: ${c.examiner_2 || "—"}`, leftCol + 90, y);
+
+  // Footer
+  doc.setFontSize(8);
+  doc.setTextColor(120, 120, 120);
+  doc.text(
+    "Dieses Zertifikat wurde elektronisch ausgestellt und ist ohne Unterschrift gültig.",
+    pageWidth / 2,
+    pageHeight - 28,
+    { align: "center" },
+  );
+  doc.text(`Ausgestellt am ${new Date().toLocaleDateString("de-AT")}`, pageWidth / 2, pageHeight - 22, {
+    align: "center",
+  });
+
+  // Download
+  const filename = `Zertifikat_${c.certificate_number}_${c.last_name}.pdf`;
+  doc.save(filename);
+  toast.success("PDF heruntergeladen", { description: filename });
+}
+
 function AdminPage() {
   const navigate = useNavigate();
   const [isAdmin, setIsAdmin] = useState<boolean | null>(null);
@@ -90,6 +264,7 @@ function AdminPage() {
   const [statsLoading, setStatsLoading] = useState(false);
   const [viewCounts, setViewCounts] = useState<Record<string, number>>({});
   const [query, setQuery] = useState("");
+  const [sendingId, setSendingId] = useState<string | null>(null);
 
   async function openStats(certNumber: string) {
     setStatsFor(certNumber);
@@ -110,10 +285,7 @@ function AdminPage() {
       if (!u.user) return;
       setEmail(u.user.email ?? "");
       setUserId(u.user.id);
-      const { data: roles } = await supabase
-        .from("user_roles")
-        .select("role")
-        .eq("user_id", u.user.id);
+      const { data: roles } = await supabase.from("user_roles").select("role").eq("user_id", u.user.id);
       setIsAdmin((roles ?? []).some((r) => r.role === "admin"));
       await loadCerts(u.user.id);
     })();
@@ -254,15 +426,10 @@ function AdminPage() {
   }
 
   async function toggleEmailSent(c: Certificate) {
-    const { error } = await supabase
-      .from("certificates")
-      .update({ email_sent: !c.email_sent })
-      .eq("id", c.id);
+    const { error } = await supabase.from("certificates").update({ email_sent: !c.email_sent }).eq("id", c.id);
     if (error) toast.error(error.message);
     else await loadCerts();
   }
-
-  const [sendingId, setSendingId] = useState<string | null>(null);
 
   async function sendCertEmail(c: Certificate) {
     if (!c.email) {
@@ -313,10 +480,7 @@ function AdminPage() {
   }
 
   async function toggleCompleted(c: Certificate) {
-    const { error } = await supabase
-      .from("certificates")
-      .update({ completed: !c.completed })
-      .eq("id", c.id);
+    const { error } = await supabase.from("certificates").update({ completed: !c.completed }).eq("id", c.id);
     if (error) toast.error(error.message);
     else await loadCerts();
   }
@@ -341,13 +505,14 @@ function AdminPage() {
     const total = certs.length;
     const sent = certs.filter((c) => c.email_sent).length;
     const completed = certs.filter((c) => c.completed).length;
-    const passed = certs.filter((c) =>
-      evaluatePass(c.exam_level, {
-        pointsHoerenLesen: c.points_hoeren_lesen,
-        pointsSchreiben: c.points_schreiben,
-        pointsSprechen: c.points_sprechen,
-        pointsWerte: c.points_werte,
-      }).passed,
+    const passed = certs.filter(
+      (c) =>
+        evaluatePass(c.exam_level, {
+          pointsHoerenLesen: c.points_hoeren_lesen,
+          pointsSchreiben: c.points_schreiben,
+          pointsSprechen: c.points_sprechen,
+          pointsWerte: c.points_werte,
+        }).passed,
     ).length;
     return { total, sent, completed, passed };
   }, [certs]);
@@ -375,11 +540,10 @@ function AdminPage() {
               </p>
               <p className="mt-4 text-sm">
                 Um Adminrechte zu erhalten, muss ein Eintrag in der Tabelle{" "}
-                <code className="rounded bg-muted px-1.5 py-0.5">user_roles</code> für Ihre
-                Benutzer-ID erstellt werden:
+                <code className="rounded bg-muted px-1.5 py-0.5">user_roles</code> für Ihre Benutzer-ID erstellt werden:
               </p>
               <pre className="mt-3 overflow-x-auto rounded-md bg-foreground p-3 text-xs text-background">
-{`INSERT INTO public.user_roles (user_id, role)
+                {`INSERT INTO public.user_roles (user_id, role)
 VALUES ('${userId}', 'admin');`}
               </pre>
               <button onClick={signOut} className="mt-6 text-sm text-primary hover:underline">
@@ -498,7 +662,9 @@ VALUES ('${userId}', 'admin');`}
                       <h2 className="truncate text-sm font-bold uppercase tracking-wider">
                         {editId ? "Zertifikat bearbeiten" : "Neues Zertifikat"}
                       </h2>
-                      <p className="text-xs text-muted-foreground">Stufe {selectedLevel} · alle Felder werden geprüft</p>
+                      <p className="text-xs text-muted-foreground">
+                        Stufe {selectedLevel} · alle Felder werden geprüft
+                      </p>
                     </div>
                   </div>
                   <span className="rounded-full bg-primary/10 px-2.5 py-1 text-xs font-bold text-primary">
@@ -507,42 +673,114 @@ VALUES ('${userId}', 'admin');`}
                 </div>
                 <form onSubmit={onSubmit} className="space-y-6 p-5 sm:p-6">
                   <FormSection title="Stammdaten">
-                    <Field label="Zertifikats-Nr." required value={form.certificate_number} onChange={(v) => update("certificate_number", v)} placeholder={`INT${form.exam_level}-02728233`} mono />
-                    <SelectField label="Prüfungsstufe" value={form.exam_level} onChange={(v) => {
-                      const prefix = `INT${v}-`;
-                      const suffix = form.certificate_number.includes("-") ? form.certificate_number.split("-").slice(1).join("-") : "";
-                      update("certificate_number", prefix + suffix);
-                      update("exam_level", v);
-                      update("result", v);
-                    }} options={LEVELS} />
-                    <SelectField label="Gesamtergebnis" value={form.result} onChange={(v) => update("result", v)} options={LEVELS} />
+                    <Field
+                      label="Zertifikats-Nr."
+                      required
+                      value={form.certificate_number}
+                      onChange={(v) => update("certificate_number", v)}
+                      placeholder={`INT${form.exam_level}-02728233`}
+                      mono
+                    />
+                    <SelectField
+                      label="Prüfungsstufe"
+                      value={form.exam_level}
+                      onChange={(v) => {
+                        const prefix = `INT${v}-`;
+                        const suffix = form.certificate_number.includes("-")
+                          ? form.certificate_number.split("-").slice(1).join("-")
+                          : "";
+                        update("certificate_number", prefix + suffix);
+                        update("exam_level", v);
+                        update("result", v);
+                      }}
+                      options={LEVELS}
+                    />
+                    <SelectField
+                      label="Gesamtergebnis"
+                      value={form.result}
+                      onChange={(v) => update("result", v)}
+                      options={LEVELS}
+                    />
                   </FormSection>
 
                   <FormSection title="Teilnehmer/in">
                     <Field label="Vorname" required value={form.first_name} onChange={(v) => update("first_name", v)} />
                     <Field label="Nachname" required value={form.last_name} onChange={(v) => update("last_name", v)} />
-                    <Field label="Geburtsland" required value={form.birth_country} onChange={(v) => update("birth_country", v)} />
-                    <DateField label="Geburtsdatum" required value={form.birth_date} onChange={(v) => update("birth_date", v)} />
-                    <DateField label="Prüfungsdatum" required value={form.exam_date} onChange={(v) => update("exam_date", v)} />
+                    <Field
+                      label="Geburtsland"
+                      required
+                      value={form.birth_country}
+                      onChange={(v) => update("birth_country", v)}
+                    />
+                    <DateField
+                      label="Geburtsdatum"
+                      required
+                      value={form.birth_date}
+                      onChange={(v) => update("birth_date", v)}
+                    />
+                    <DateField
+                      label="Prüfungsdatum"
+                      required
+                      value={form.exam_date}
+                      onChange={(v) => update("exam_date", v)}
+                    />
                   </FormSection>
 
                   <FormSection title="Prüfer/innen">
-                    <Field label="Prüfer/in 1" value={form.examiner_1} onChange={(v) => update("examiner_1", v)} placeholder="EXT0005532" mono />
-                    <Field label="Prüfer/in 2" value={form.examiner_2} onChange={(v) => update("examiner_2", v)} placeholder="EXT0000511" mono />
+                    <Field
+                      label="Prüfer/in 1"
+                      value={form.examiner_1}
+                      onChange={(v) => update("examiner_1", v)}
+                      placeholder="EXT0005532"
+                      mono
+                    />
+                    <Field
+                      label="Prüfer/in 2"
+                      value={form.examiner_2}
+                      onChange={(v) => update("examiner_2", v)}
+                      placeholder="EXT0000511"
+                      mono
+                    />
                   </FormSection>
 
                   <FormSection title="Punkte (auto-vorausgefüllt)">
-                    <Field label="Hören/Lesen" type="number" value={form.points_hoeren_lesen} onChange={(v) => update("points_hoeren_lesen", v)} />
-                    <Field label="Schreiben" type="number" value={form.points_schreiben} onChange={(v) => update("points_schreiben", v)} />
-                    <Field label="Sprechen" type="number" value={form.points_sprechen} onChange={(v) => update("points_sprechen", v)} />
+                    <Field
+                      label="Hören/Lesen"
+                      type="number"
+                      value={form.points_hoeren_lesen}
+                      onChange={(v) => update("points_hoeren_lesen", v)}
+                    />
+                    <Field
+                      label="Schreiben"
+                      type="number"
+                      value={form.points_schreiben}
+                      onChange={(v) => update("points_schreiben", v)}
+                    />
+                    <Field
+                      label="Sprechen"
+                      type="number"
+                      value={form.points_sprechen}
+                      onChange={(v) => update("points_sprechen", v)}
+                    />
                     {form.exam_level !== "C1" && form.exam_level !== "C2" && (
-                      <Field label="Werte & Orientierung" type="number" value={form.points_werte} onChange={(v) => update("points_werte", v)} />
+                      <Field
+                        label="Werte & Orientierung"
+                        type="number"
+                        value={form.points_werte}
+                        onChange={(v) => update("points_werte", v)}
+                      />
                     )}
                   </FormSection>
 
                   <FormSection title="Zustellung">
                     <div className="sm:col-span-2 lg:col-span-3">
-                      <Field label="E-Mail (für Zustellung)" type="email" value={form.email} onChange={(v) => update("email", v)} placeholder="empfaenger@example.com" />
+                      <Field
+                        label="E-Mail (für Zustellung)"
+                        type="email"
+                        value={form.email}
+                        onChange={(v) => update("email", v)}
+                        placeholder="empfaenger@example.com"
+                      />
                     </div>
                   </FormSection>
 
@@ -557,9 +795,7 @@ VALUES ('${userId}', 'admin');`}
                     <button type="button" onClick={resetForm} className="text-sm text-muted-foreground hover:underline">
                       Abbrechen
                     </button>
-                    {msg && msg.type === "err" && (
-                      <span className="text-sm text-destructive">{msg.text}</span>
-                    )}
+                    {msg && msg.type === "err" && <span className="text-sm text-destructive">{msg.text}</span>}
                   </div>
                 </form>
               </>
@@ -576,7 +812,10 @@ VALUES ('${userId}', 'admin');`}
                 </span>
               </div>
               <div className="relative w-full sm:w-72">
-                <Search size={14} className="pointer-events-none absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground" />
+                <Search
+                  size={14}
+                  className="pointer-events-none absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground"
+                />
                 <input
                   value={query}
                   onChange={(e) => setQuery(e.target.value)}
@@ -601,15 +840,27 @@ VALUES ('${userId}', 'admin');`}
                       <div className="flex items-start gap-3 min-w-0">
                         <CompletedCheckbox checked={c.completed} onChange={() => toggleCompleted(c)} />
                         <div className="min-w-0">
-                          <div className="font-mono text-[11px] text-muted-foreground break-all">{c.certificate_number}</div>
-                          <div className="mt-0.5 font-semibold">{c.last_name}, {c.first_name}</div>
+                          <div className="font-mono text-[11px] text-muted-foreground break-all">
+                            {c.certificate_number}
+                          </div>
+                          <div className="mt-0.5 font-semibold">
+                            {c.last_name}, {c.first_name}
+                          </div>
                         </div>
                       </div>
                       <LevelBadge level={c.result} passed={passed} />
                     </div>
                     <dl className="mt-3 grid grid-cols-2 gap-2 text-xs">
-                      <div><dt className="text-muted-foreground">Geburt</dt><dd>{c.birth_date}</dd></div>
-                      <div><dt className="text-muted-foreground">Prüfung</dt><dd>{c.exam_date} · {c.exam_level}</dd></div>
+                      <div>
+                        <dt className="text-muted-foreground">Geburt</dt>
+                        <dd>{c.birth_date}</dd>
+                      </div>
+                      <div>
+                        <dt className="text-muted-foreground">Prüfung</dt>
+                        <dd>
+                          {c.exam_date} · {c.exam_level}
+                        </dd>
+                      </div>
                       <div className="col-span-2">
                         <dt className="text-muted-foreground">E-Mail</dt>
                         <dd className="mt-0.5 flex items-center gap-2 flex-wrap">
@@ -619,20 +870,36 @@ VALUES ('${userId}', 'admin');`}
                       </div>
                     </dl>
                     <div className="mt-3 flex flex-wrap gap-1.5">
-                      <ActionButton tone="primary" to={{ to: "/verify/$cert", params: { cert: c.certificate_number } }} title="Anzeigen"><Eye size={15} /></ActionButton>
                       <ActionButton
-                        onClick={() => window.open(`/verify/${c.certificate_number}?print=1`, "_blank")}
-                        title="PDF drucken / exportieren"
+                        tone="primary"
+                        to={{ to: "/verify/$cert", params: { cert: c.certificate_number } }}
+                        title="Anzeigen"
                       >
+                        <Eye size={15} />
+                      </ActionButton>
+                      <ActionButton onClick={() => downloadCertificatePdf(c)} title="PDF herunterladen (A4)">
                         <FileText size={15} />
                       </ActionButton>
-                      <StatsButton count={viewCounts[c.certificate_number] ?? 0} onClick={() => openStats(c.certificate_number)} />
-                      <ActionButton onClick={() => copyCertUrl(c.certificate_number)} title="Link kopieren"><Link2 size={15} /></ActionButton>
+                      <StatsButton
+                        count={viewCounts[c.certificate_number] ?? 0}
+                        onClick={() => openStats(c.certificate_number)}
+                      />
+                      <ActionButton onClick={() => copyCertUrl(c.certificate_number)} title="Link kopieren">
+                        <Link2 size={15} />
+                      </ActionButton>
                       {c.email && (
-                        <SendButton count={c.email_send_count ?? 0} onClick={() => sendCertEmail(c)} disabled={sendingId === c.id} />
+                        <SendButton
+                          count={c.email_send_count ?? 0}
+                          onClick={() => sendCertEmail(c)}
+                          disabled={sendingId === c.id}
+                        />
                       )}
-                      <ActionButton onClick={() => loadIntoForm(c)} title="Bearbeiten"><Pencil size={15} /></ActionButton>
-                      <ActionButton tone="danger" onClick={() => onDelete(c.id)} title="Löschen"><Trash2 size={15} /></ActionButton>
+                      <ActionButton onClick={() => loadIntoForm(c)} title="Bearbeiten">
+                        <Pencil size={15} />
+                      </ActionButton>
+                      <ActionButton tone="danger" onClick={() => onDelete(c.id)} title="Löschen">
+                        <Trash2 size={15} />
+                      </ActionButton>
                     </div>
                   </div>
                 );
@@ -669,15 +936,27 @@ VALUES ('${userId}', 'admin');`}
                         pointsWerte: c.points_werte,
                       }).passed;
                       return (
-                        <tr key={c.id} className={"border-b border-border last:border-0 transition-colors hover:bg-muted/30 " + (c.completed ? "bg-emerald-50/40" : "")}>
+                        <tr
+                          key={c.id}
+                          className={
+                            "border-b border-border last:border-0 transition-colors hover:bg-muted/30 " +
+                            (c.completed ? "bg-emerald-50/40" : "")
+                          }
+                        >
                           <td className="px-4 py-3">
                             <CompletedCheckbox checked={c.completed} onChange={() => toggleCompleted(c)} />
                           </td>
                           <td className="px-4 py-3 font-mono text-xs">{c.certificate_number}</td>
-                          <td className="px-4 py-3 font-medium">{c.last_name}, {c.first_name}</td>
+                          <td className="px-4 py-3 font-medium">
+                            {c.last_name}, {c.first_name}
+                          </td>
                           <td className="px-4 py-3 text-muted-foreground">{c.birth_date}</td>
-                          <td className="px-4 py-3 text-muted-foreground">{c.exam_date} · <span className="font-semibold text-foreground">{c.exam_level}</span></td>
-                          <td className="px-4 py-3"><LevelBadge level={c.result} passed={passed} /></td>
+                          <td className="px-4 py-3 text-muted-foreground">
+                            {c.exam_date} · <span className="font-semibold text-foreground">{c.exam_level}</span>
+                          </td>
+                          <td className="px-4 py-3">
+                            <LevelBadge level={c.result} passed={passed} />
+                          </td>
                           <td className="px-4 py-3">
                             {c.email ? (
                               <div className="flex flex-col gap-1">
@@ -690,29 +969,47 @@ VALUES ('${userId}', 'admin');`}
                           </td>
                           <td className="px-4 py-3 text-right whitespace-nowrap">
                             <div className="flex justify-end gap-1.5">
-                              <ActionButton tone="primary" to={{ to: "/verify/$cert", params: { cert: c.certificate_number } }} title="Anzeigen"><Eye size={15} /></ActionButton>
                               <ActionButton
-                                onClick={() => window.open(`/verify/${c.certificate_number}?print=1`, "_blank")}
-                                title="PDF drucken / exportieren"
+                                tone="primary"
+                                to={{ to: "/verify/$cert", params: { cert: c.certificate_number } }}
+                                title="Anzeigen"
                               >
+                                <Eye size={15} />
+                              </ActionButton>
+                              <ActionButton onClick={() => downloadCertificatePdf(c)} title="PDF herunterladen (A4)">
                                 <FileText size={15} />
                               </ActionButton>
-                              <StatsButton count={viewCounts[c.certificate_number] ?? 0} onClick={() => openStats(c.certificate_number)} />
-                              <ActionButton onClick={() => copyCertUrl(c.certificate_number)} title="Link kopieren"><Link2 size={15} /></ActionButton>
+                              <StatsButton
+                                count={viewCounts[c.certificate_number] ?? 0}
+                                onClick={() => openStats(c.certificate_number)}
+                              />
+                              <ActionButton onClick={() => copyCertUrl(c.certificate_number)} title="Link kopieren">
+                                <Link2 size={15} />
+                              </ActionButton>
                               {c.email && (
-                                <SendButton count={c.email_send_count ?? 0} onClick={() => sendCertEmail(c)} disabled={sendingId === c.id} />
+                                <SendButton
+                                  count={c.email_send_count ?? 0}
+                                  onClick={() => sendCertEmail(c)}
+                                  disabled={sendingId === c.id}
+                                />
                               )}
-                              <ActionButton onClick={() => loadIntoForm(c)} title="Bearbeiten"><Pencil size={15} /></ActionButton>
-                              <ActionButton tone="danger" onClick={() => onDelete(c.id)} title="Löschen"><Trash2 size={15} /></ActionButton>
+                              <ActionButton onClick={() => loadIntoForm(c)} title="Bearbeiten">
+                                <Pencil size={15} />
+                              </ActionButton>
+                              <ActionButton tone="danger" onClick={() => onDelete(c.id)} title="Löschen">
+                                <Trash2 size={15} />
+                              </ActionButton>
                             </div>
                           </td>
                         </tr>
                       );
                     })}
                     {filtered.length === 0 && (
-                      <tr><td colSpan={8} className="px-4 py-10 text-center text-muted-foreground">
-                        {certs.length === 0 ? "Noch keine Zertifikate." : "Keine Treffer für Ihre Suche."}
-                      </td></tr>
+                      <tr>
+                        <td colSpan={8} className="px-4 py-10 text-center text-muted-foreground">
+                          {certs.length === 0 ? "Noch keine Zertifikate." : "Keine Treffer für Ihre Suche."}
+                        </td>
+                      </tr>
                     )}
                   </tbody>
                 </table>
@@ -721,14 +1018,26 @@ VALUES ('${userId}', 'admin');`}
           </section>
 
           {statsFor && (
-            <div className="fixed inset-0 z-50 flex items-center justify-center bg-foreground/40 p-4 backdrop-blur-sm" onClick={() => setStatsFor(null)}>
-              <div className="max-h-[85vh] w-full max-w-4xl overflow-hidden rounded-xl border border-border bg-background shadow-2xl" onClick={(e) => e.stopPropagation()}>
+            <div
+              className="fixed inset-0 z-50 flex items-center justify-center bg-foreground/40 p-4 backdrop-blur-sm"
+              onClick={() => setStatsFor(null)}
+            >
+              <div
+                className="max-h-[85vh] w-full max-w-4xl overflow-hidden rounded-xl border border-border bg-background shadow-2xl"
+                onClick={(e) => e.stopPropagation()}
+              >
                 <div className="flex items-center justify-between gap-3 border-b border-border px-5 py-4 sm:px-6">
                   <div className="min-w-0">
                     <h3 className="text-sm font-bold uppercase tracking-wider">Verifikationen</h3>
-                    <p className="truncate font-mono text-xs text-muted-foreground">{statsFor} · {stats.length} Suchen</p>
+                    <p className="truncate font-mono text-xs text-muted-foreground">
+                      {statsFor} · {stats.length} Suchen
+                    </p>
                   </div>
-                  <button onClick={() => setStatsFor(null)} className="inline-flex h-8 w-8 shrink-0 items-center justify-center rounded-md border border-border hover:bg-muted" aria-label="Schließen">
+                  <button
+                    onClick={() => setStatsFor(null)}
+                    className="inline-flex h-8 w-8 shrink-0 items-center justify-center rounded-md border border-border hover:bg-muted"
+                    aria-label="Schließen"
+                  >
                     <X size={16} />
                   </button>
                 </div>
@@ -744,10 +1053,14 @@ VALUES ('${userId}', 'admin');`}
                           <div key={v.id} className="p-4 text-sm">
                             <div className="font-bold">{new Date(v.created_at).toLocaleString()}</div>
                             <dl className="mt-2 grid grid-cols-[auto_1fr] gap-x-3 gap-y-1 text-xs">
-                              <dt className="text-muted-foreground">Standort</dt><dd>{[v.city, v.region, v.country].filter(Boolean).join(", ") || "—"}</dd>
-                              <dt className="text-muted-foreground">Gerät</dt><dd>{v.device_type ?? "—"}</dd>
-                              <dt className="text-muted-foreground">Browser/OS</dt><dd>{[v.browser, v.os].filter(Boolean).join(" / ") || "—"}</dd>
-                              <dt className="text-muted-foreground">IP</dt><dd className="font-mono break-all">{v.ip ?? "—"}</dd>
+                              <dt className="text-muted-foreground">Standort</dt>
+                              <dd>{[v.city, v.region, v.country].filter(Boolean).join(", ") || "—"}</dd>
+                              <dt className="text-muted-foreground">Gerät</dt>
+                              <dd>{v.device_type ?? "—"}</dd>
+                              <dt className="text-muted-foreground">Browser/OS</dt>
+                              <dd>{[v.browser, v.os].filter(Boolean).join(" / ") || "—"}</dd>
+                              <dt className="text-muted-foreground">IP</dt>
+                              <dd className="font-mono break-all">{v.ip ?? "—"}</dd>
                             </dl>
                           </div>
                         ))}
@@ -766,7 +1079,9 @@ VALUES ('${userId}', 'admin');`}
                           {stats.map((v) => (
                             <tr key={v.id} className="border-t border-border">
                               <td className="px-4 py-2 whitespace-nowrap">{new Date(v.created_at).toLocaleString()}</td>
-                              <td className="px-4 py-2">{[v.city, v.region, v.country].filter(Boolean).join(", ") || "—"}</td>
+                              <td className="px-4 py-2">
+                                {[v.city, v.region, v.country].filter(Boolean).join(", ") || "—"}
+                              </td>
                               <td className="px-4 py-2">{v.device_type ?? "—"}</td>
                               <td className="px-4 py-2">{[v.browser, v.os].filter(Boolean).join(" / ") || "—"}</td>
                               <td className="px-4 py-2 font-mono text-xs">{v.ip ?? "—"}</td>
@@ -789,8 +1104,16 @@ VALUES ('${userId}', 'admin');`}
 /* ──────────────────────────── helper components ──────────────────────────── */
 
 function KpiCard({
-  label, value, icon, tint,
-}: { label: string; value: number; icon: React.ReactNode; tint: "primary" | "emerald" | "indigo" | "amber" }) {
+  label,
+  value,
+  icon,
+  tint,
+}: {
+  label: string;
+  value: number;
+  icon: React.ReactNode;
+  tint: "primary" | "emerald" | "indigo" | "amber";
+}) {
   const tints: Record<string, string> = {
     primary: "bg-primary/10 text-primary",
     emerald: "bg-emerald-100 text-emerald-700",
@@ -818,13 +1141,28 @@ function FormSection({ title, children }: { title: string; children: React.React
 }
 
 function Field({
-  label, value, onChange, type = "text", required, placeholder, mono,
+  label,
+  value,
+  onChange,
+  type = "text",
+  required,
+  placeholder,
+  mono,
 }: {
-  label: string; value: string; onChange: (v: string) => void; type?: string; required?: boolean; placeholder?: string; mono?: boolean;
+  label: string;
+  value: string;
+  onChange: (v: string) => void;
+  type?: string;
+  required?: boolean;
+  placeholder?: string;
+  mono?: boolean;
 }) {
   return (
     <label className="block">
-      <span className="block text-xs font-semibold text-foreground/80">{label}{required && <span className="text-primary"> *</span>}</span>
+      <span className="block text-xs font-semibold text-foreground/80">
+        {label}
+        {required && <span className="text-primary"> *</span>}
+      </span>
       <input
         type={type}
         required={required}
@@ -842,16 +1180,22 @@ function Field({
 }
 
 function DateField({
-  label, value, onChange, required,
+  label,
+  value,
+  onChange,
+  required,
 }: {
-  label: string; value: string; onChange: (v: string) => void; required?: boolean;
+  label: string;
+  value: string;
+  onChange: (v: string) => void;
+  required?: boolean;
 }) {
-  // value is ISO yyyy-mm-dd; display dd/mm/yyyy
   const [text, setText] = useState(isoToDisplay(value));
-  useEffect(() => { setText(isoToDisplay(value)); }, [value]);
+  useEffect(() => {
+    setText(isoToDisplay(value));
+  }, [value]);
 
   function handleChange(raw: string) {
-    // auto-insert slashes
     const digits = raw.replace(/\D/g, "").slice(0, 8);
     let out = digits;
     if (digits.length > 4) out = `${digits.slice(0, 2)}/${digits.slice(2, 4)}/${digits.slice(4)}`;
@@ -863,7 +1207,10 @@ function DateField({
 
   return (
     <label className="block">
-      <span className="block text-xs font-semibold text-foreground/80">{label}{required && <span className="text-primary"> *</span>}</span>
+      <span className="block text-xs font-semibold text-foreground/80">
+        {label}
+        {required && <span className="text-primary"> *</span>}
+      </span>
       <input
         type="text"
         inputMode="numeric"
@@ -890,9 +1237,15 @@ function displayToIso(s: string) {
 }
 
 function SelectField({
-  label, value, onChange, options,
+  label,
+  value,
+  onChange,
+  options,
 }: {
-  label: string; value: string; onChange: (v: string) => void; options: string[];
+  label: string;
+  value: string;
+  onChange: (v: string) => void;
+  options: string[];
 }) {
   return (
     <label className="block">
@@ -902,7 +1255,11 @@ function SelectField({
         onChange={(e) => onChange(e.target.value)}
         className="mt-1.5 h-9 w-full rounded-md border border-input bg-background px-3 text-sm shadow-sm focus:outline-none focus:ring-1 focus:ring-ring"
       >
-        {options.map((o) => <option key={o} value={o}>{o}</option>)}
+        {options.map((o) => (
+          <option key={o} value={o}>
+            {o}
+          </option>
+        ))}
       </select>
     </label>
   );
@@ -946,9 +1303,7 @@ function EmailBadge({ sent }: { sent: boolean; onClick?: () => void }) {
     <span
       className={
         "inline-flex items-center gap-1 self-start rounded-full px-2 py-0.5 text-[10px] font-bold uppercase tracking-wider " +
-        (sent
-          ? "bg-emerald-100 text-emerald-700"
-          : "bg-amber-100 text-amber-800")
+        (sent ? "bg-emerald-100 text-emerald-700" : "bg-amber-100 text-amber-800")
       }
     >
       <span className={"h-1.5 w-1.5 rounded-full " + (sent ? "bg-emerald-600" : "bg-amber-500")} />
@@ -961,8 +1316,22 @@ type ActionTone = "default" | "primary" | "danger" | "success";
 
 function ActionButton(
   props:
-    | { tone?: ActionTone; onClick: () => void; disabled?: boolean; title: string; children: React.ReactNode; to?: undefined }
-    | { tone?: ActionTone; to: { to: string; params: Record<string, string> }; title: string; children: React.ReactNode; onClick?: undefined; disabled?: undefined },
+    | {
+        tone?: ActionTone;
+        onClick: () => void;
+        disabled?: boolean;
+        title: string;
+        children: React.ReactNode;
+        to?: undefined;
+      }
+    | {
+        tone?: ActionTone;
+        to: { to: string; params: Record<string, string> };
+        title: string;
+        children: React.ReactNode;
+        onClick?: undefined;
+        disabled?: undefined;
+      },
 ) {
   const tone = props.tone ?? "default";
   const cls =
@@ -970,20 +1339,32 @@ function ActionButton(
     (tone === "primary"
       ? "border-primary bg-primary text-primary-foreground hover:opacity-90"
       : tone === "danger"
-      ? "border-border bg-background text-destructive hover:bg-destructive hover:text-destructive-foreground hover:border-destructive"
-      : tone === "success"
-      ? "border-border bg-background text-emerald-700 hover:bg-emerald-600 hover:text-white hover:border-emerald-600"
-      : "border-border bg-background text-foreground hover:bg-muted");
+        ? "border-border bg-background text-destructive hover:bg-destructive hover:text-destructive-foreground hover:border-destructive"
+        : tone === "success"
+          ? "border-border bg-background text-emerald-700 hover:bg-emerald-600 hover:text-white hover:border-emerald-600"
+          : "border-border bg-background text-foreground hover:bg-muted");
 
   if ("to" in props && props.to) {
     return (
-      <Link to={props.to.to as any} params={props.to.params as any} title={props.title} aria-label={props.title} className={cls}>
+      <Link
+        to={props.to.to as any}
+        params={props.to.params as any}
+        title={props.title}
+        aria-label={props.title}
+        className={cls}
+      >
         {props.children}
       </Link>
     );
   }
   return (
-    <button onClick={props.onClick} disabled={props.disabled} title={props.title} aria-label={props.title} className={cls}>
+    <button
+      onClick={props.onClick}
+      disabled={props.disabled}
+      title={props.title}
+      aria-label={props.title}
+      className={cls}
+    >
       {props.children}
     </button>
   );
@@ -1006,7 +1387,8 @@ function StatsButton({ count, onClick }: { count: number; onClick: () => void })
 }
 
 function SendButton({ count, onClick, disabled }: { count: number; onClick: () => void; disabled?: boolean }) {
-  const title = count === 0 ? "E-Mail senden" : count === 1 ? "1x gesendet · erneut senden" : `${count}x gesendet · erneut senden`;
+  const title =
+    count === 0 ? "E-Mail senden" : count === 1 ? "1x gesendet · erneut senden" : `${count}x gesendet · erneut senden`;
   return (
     <span className="relative inline-flex">
       <ActionButton tone="success" onClick={onClick} disabled={disabled} title={title}>
