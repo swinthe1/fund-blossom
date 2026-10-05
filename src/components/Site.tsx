@@ -1,6 +1,7 @@
 import { Link } from "@tanstack/react-router";
 import { useEffect, useRef, useState, type ReactNode } from "react";
 import { ChevronDown, Globe, Mail, Menu, Phone, Search, X } from "lucide-react";
+import logoAsset from "@/assets/oif-logo.png.asset.json";
 
 const links = [
   { to: "/der-oeif", label: "Der ÖIF" },
@@ -65,9 +66,8 @@ function useOutside(close: () => void) {
 
 function Logo() {
   return (
-    <Link to="/" className="flex items-center gap-2">
-      <span className="flex h-10 w-10 items-center justify-center rounded-full bg-primary text-lg font-bold text-primary-foreground">A</span>
-      <span className="text-lg font-semibold sm:text-xl">Academy Portal</span>
+    <Link to="/" className="flex items-center">
+      <img src={logoAsset.url} alt="Österreichischer Integrationsfonds – Zertifiziert für Integrationskurse" className="h-12 w-auto sm:h-14" />
     </Link>
   );
 }
@@ -194,8 +194,8 @@ export function SiteFooter() {
   return (
     <footer className="bg-foreground px-4 py-12 text-background">
       <div className="mx-auto grid max-w-[1264px] gap-8 md:grid-cols-3">
-        <div><p className="text-lg font-bold">Academy Portal</p><p className="mt-2 text-sm opacity-80">Lernen, Kurse und Weiterbildung</p></div>
-        <div className="text-sm opacity-80"><p>© {new Date().getFullYear()} Academy Portal</p></div>
+        <div><p className="text-lg font-bold">Österreichischer Integrationsfonds</p><p className="mt-2 text-sm opacity-80">Landstraßer Hauptstraße 26, 1030 Wien</p></div>
+        <div className="text-sm opacity-80"><p>Service-Hotline: 050 46 80</p><p>E-Mail: info@integrationsfondos.at</p></div>
         <div className="flex gap-4 text-sm opacity-80 md:justify-end">
           <Link to="/impressum">Impressum</Link><Link to="/datenschutz">Datenschutz</Link><Link to="/kontakt">Kontakt</Link>
         </div>
