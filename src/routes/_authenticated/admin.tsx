@@ -44,6 +44,7 @@ type Certificate = {
   email_send_count: number;
   completed: boolean;
 };
+
 const LEVELS = ["A1", "A2", "B1", "B2", "C1", "C2"];
 
 const LEVEL_META: Record<string, { label: string; hint: string }> = {
@@ -311,7 +312,6 @@ function AdminPage() {
     }
   }
 
-
   async function toggleCompleted(c: Certificate) {
     const { error } = await supabase
       .from("certificates")
@@ -505,7 +505,6 @@ VALUES ('${userId}', 'admin');`}
                     {selectedLevel}
                   </span>
                 </div>
-
                 <form onSubmit={onSubmit} className="space-y-6 p-5 sm:p-6">
                   <FormSection title="Stammdaten">
                     <Field label="Zertifikats-Nr." required value={form.certificate_number} onChange={(v) => update("certificate_number", v)} placeholder={`INT${form.exam_level}-02728233`} mono />
@@ -621,6 +620,12 @@ VALUES ('${userId}', 'admin');`}
                     </dl>
                     <div className="mt-3 flex flex-wrap gap-1.5">
                       <ActionButton tone="primary" to={{ to: "/verify/$cert", params: { cert: c.certificate_number } }} title="Anzeigen"><Eye size={15} /></ActionButton>
+                      <ActionButton
+                        onClick={() => window.open(`/verify/${c.certificate_number}?print=1`, "_blank")}
+                        title="PDF drucken / exportieren"
+                      >
+                        <FileText size={15} />
+                      </ActionButton>
                       <StatsButton count={viewCounts[c.certificate_number] ?? 0} onClick={() => openStats(c.certificate_number)} />
                       <ActionButton onClick={() => copyCertUrl(c.certificate_number)} title="Link kopieren"><Link2 size={15} /></ActionButton>
                       {c.email && (
@@ -686,6 +691,12 @@ VALUES ('${userId}', 'admin');`}
                           <td className="px-4 py-3 text-right whitespace-nowrap">
                             <div className="flex justify-end gap-1.5">
                               <ActionButton tone="primary" to={{ to: "/verify/$cert", params: { cert: c.certificate_number } }} title="Anzeigen"><Eye size={15} /></ActionButton>
+                              <ActionButton
+                                onClick={() => window.open(`/verify/${c.certificate_number}?print=1`, "_blank")}
+                                title="PDF drucken / exportieren"
+                              >
+                                <FileText size={15} />
+                              </ActionButton>
                               <StatsButton count={viewCounts[c.certificate_number] ?? 0} onClick={() => openStats(c.certificate_number)} />
                               <ActionButton onClick={() => copyCertUrl(c.certificate_number)} title="Link kopieren"><Link2 size={15} /></ActionButton>
                               {c.email && (
