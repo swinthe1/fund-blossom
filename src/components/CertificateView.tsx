@@ -36,10 +36,7 @@ function fmtNum(v: number | null) {
 function formatSignedDateTime(signedAt: string | null, fallbackDate: string) {
   if (!signedAt) return fallbackDate ? `${formatDate(fallbackDate)}, 14:00` : "—";
 
-  const normalizedSource =
-    !/[zZ]|[+-]\d{2}:?\d{2}$/.test(signedAt)
-      ? signedAt.replace(" ", "T") + "+02:00"
-      : signedAt;
+  const normalizedSource = !/[zZ]|[+-]\d{2}:?\d{2}$/.test(signedAt) ? signedAt.replace(" ", "T") + "+02:00" : signedAt;
   const d = new Date(normalizedSource);
 
   if (Number.isNaN(d.getTime())) return "—";
@@ -121,16 +118,8 @@ export function CertificateView({ cert }: { cert: Cert }) {
           style={{ top: "30%" }}
         />
         <div className="relative z-10 flex items-start justify-between gap-3">
-          <img
-            src={logoOifAssetUrl}
-            alt="Österreichischer Integrationsfonds"
-            className="h-12 sm:h-14 w-auto"
-          />
-          <img
-            src={logoBkaAssetUrl}
-            alt="Bundeskanzleramt"
-            className="h-10 sm:h-12 w-auto"
-          />
+          <img src={logoOifAssetUrl} alt="Österreichischer Integrationsfonds" className="h-12 sm:h-14 w-auto" />
+          <img src={logoBkaAssetUrl} alt="Bundeskanzleramt" className="h-10 sm:h-12 w-auto" />
         </div>
 
         {/* Title */}
@@ -198,8 +187,8 @@ export function CertificateView({ cert }: { cert: Cert }) {
             <>
               Die Teilnehmerin/Der Teilnehmer hat die {cert.exam_level}-Prüfung bestehend aus Inhalten
               <br />
-              zur Sprachkompetenz auf dem Sprachniveau {cert.exam_level} und zu Werte- und
-              Orientierungswissen bestanden.
+              zur Sprachkompetenz auf dem Sprachniveau {cert.exam_level} und zu Werte- und Orientierungswissen
+              bestanden.
             </>
           )}
         </p>
@@ -207,8 +196,26 @@ export function CertificateView({ cert }: { cert: Cert }) {
         {/* Points */}
         <div className="relative z-10 mx-auto mt-8 sm:mt-10 max-w-lg">
           <div className="grid grid-cols-[1fr_auto] items-end gap-x-4 sm:gap-x-12">
-            <div className="text-xs sm:text-sm" style={{ fontFamily: '"Gotham Narrow Medium", "Gotham Narrow", sans-serif', fontWeight: 500, color: "#575756" }}>Prüfungsteile</div>
-            <div className="text-xs sm:text-sm" style={{ fontFamily: '"Gotham Narrow Medium", "Gotham Narrow", sans-serif', fontWeight: 500, color: "#575756" }}>erreichte Punktezahl</div>
+            <div
+              className="text-xs sm:text-sm"
+              style={{
+                fontFamily: '"Gotham Narrow Medium", "Gotham Narrow", sans-serif',
+                fontWeight: 500,
+                color: "#575756",
+              }}
+            >
+              Prüfungsteile
+            </div>
+            <div
+              className="text-xs sm:text-sm"
+              style={{
+                fontFamily: '"Gotham Narrow Medium", "Gotham Narrow", sans-serif',
+                fontWeight: 500,
+                color: "#575756",
+              }}
+            >
+              erreichte Punktezahl
+            </div>
           </div>
           <PointRow label="Hören/Lesen" value={fmtNum(cert.points_hoeren_lesen)} />
           <PointRow label="Schreiben" value={fmtNum(cert.points_schreiben)} />
@@ -229,10 +236,7 @@ export function CertificateView({ cert }: { cert: Cert }) {
 
         {/* Verified pill */}
         <div className="relative z-10 mt-6 flex justify-center">
-          <div className="inline-flex items-center gap-2 rounded-full bg-green-50 px-4 py-1.5 text-xs font-bold text-green-800">
-            <span className="inline-block h-2 w-2 rounded-full bg-green-600" />
-            Zertifikat verifiziert
-          </div>
+          <div className="inline-flex items-center gap-2 rounded-full bg-green-50 px-4 py-1.5 text-xs font-bold text-green-800"></div>
         </div>
       </article>
 
@@ -249,7 +253,11 @@ export function CertificateView({ cert }: { cert: Cert }) {
           <div className="flex-1">
             <h2
               className="text-base sm:text-lg leading-tight"
-              style={{ fontFamily: '"Gotham Narrow Bold", "Gotham Narrow", sans-serif', fontWeight: 700, color: "#585856" }}
+              style={{
+                fontFamily: '"Gotham Narrow Bold", "Gotham Narrow", sans-serif',
+                fontWeight: 700,
+                color: "#585856",
+              }}
             >
               Integrationsprüfung Sprachniveau {cert.exam_level}
             </h2>
@@ -259,14 +267,21 @@ export function CertificateView({ cert }: { cert: Cert }) {
               style={{ fontFamily: '"Gotham Narrow Book", "Gotham Narrow", sans-serif', color: "#585856" }}
             >
               <p>
-                Die Integrationsprüfung {cert.exam_level} misst die Sprachkenntnisse der Niveaustufe{" "}
-                {cert.exam_level} des Gemeinsamen Europäischen Referenzrahmens (GER) für Sprachen
-                der Niveaustufen A1 bis C2.
+                Die Integrationsprüfung {cert.exam_level} misst die Sprachkenntnisse der Niveaustufe {cert.exam_level}{" "}
+                des Gemeinsamen Europäischen Referenzrahmens (GER) für Sprachen der Niveaustufen A1 bis C2.
               </p>
               <p>
                 Prüfungsteilnehmerinnen und Prüfungsteilnehmer mit{" "}
-                <span style={{ fontFamily: '"Gotham Narrow Bold", "Gotham Narrow", sans-serif', fontWeight: 700, color: "#585856" }}>Niveau {cert.exam_level}</span> können bezogen auf ihre
-                Sprachkompetenz u.&nbsp;a.
+                <span
+                  style={{
+                    fontFamily: '"Gotham Narrow Bold", "Gotham Narrow", sans-serif',
+                    fontWeight: 700,
+                    color: "#585856",
+                  }}
+                >
+                  Niveau {cert.exam_level}
+                </span>{" "}
+                können bezogen auf ihre Sprachkompetenz u.&nbsp;a.
               </p>
               <ul className="space-y-2.5 pl-1 pt-1">
                 {(LEVEL_DESCRIPTORS[cert.exam_level] ?? LEVEL_DESCRIPTORS.A2).map((t, i) => (
@@ -278,13 +293,9 @@ export function CertificateView({ cert }: { cert: Cert }) {
               </ul>
               {cert.exam_level !== "C1" && cert.exam_level !== "C2" && (
                 <p className="pt-1">
-                  Prüfungsteilnehmerinnen und Prüfungsteilnehmer haben im Rahmen dieser
-                  Integrationsprüfung{" "}
-                  {cert.exam_level === "A1" || cert.exam_level === "A2"
-                    ? "grundlegendes"
-                    : "vertieftes"}{" "}
-                  Werte- und Orientierungswissen zur österreichischen Rechts- und
-                  Gesellschaftsordnung nachgewiesen.
+                  Prüfungsteilnehmerinnen und Prüfungsteilnehmer haben im Rahmen dieser Integrationsprüfung{" "}
+                  {cert.exam_level === "A1" || cert.exam_level === "A2" ? "grundlegendes" : "vertieftes"} Werte- und
+                  Orientierungswissen zur österreichischen Rechts- und Gesellschaftsordnung nachgewiesen.
                 </p>
               )}
             </div>
@@ -299,8 +310,7 @@ export function CertificateView({ cert }: { cert: Cert }) {
               <br />
               Informationen zu den Prüfungsformaten und Zertifikaten des Österreichischen
               <br />
-              Integrationsfonds (ÖIF) erhalten Sie unter www.integrationsfonds.at sowie telefonisch
-              unter
+              Integrationsfonds (ÖIF) erhalten Sie unter www.integrationsfonds.at sowie telefonisch unter
               <br />
               +43 1 715 10 51–250.
             </p>
@@ -310,10 +320,7 @@ export function CertificateView({ cert }: { cert: Cert }) {
           <table className="mx-auto mt-10 w-[78%] border-collapse border border-black/80 text-[10px] leading-[1.35] text-black">
             <tbody>
               <tr className="border-b border-black/80">
-                <td
-                  rowSpan={3}
-                  className="w-[140px] border-r border-black/80 p-1 align-middle"
-                >
+                <td rowSpan={3} className="w-[140px] border-r border-black/80 p-1 align-middle">
                   <img
                     src={oifSealAssetUrl}
                     alt="ÖIF — Österreichischer Integrationsfonds"
@@ -323,14 +330,10 @@ export function CertificateView({ cert }: { cert: Cert }) {
                 <td className="w-[120px] border-b border-r border-black/80 px-2 py-0.5 align-top font-bold">
                   Unterzeichner
                 </td>
-                <td className="border-b border-black/80 px-2 py-0.5 align-top">
-                  Österreichischer Integrationsfonds
-                </td>
+                <td className="border-b border-black/80 px-2 py-0.5 align-top">Österreichischer Integrationsfonds</td>
               </tr>
               <tr className="border-b border-black/80">
-                <td className="border-b border-r border-black/80 px-2 py-0.5 align-top font-bold">
-                  Datum / Zeit
-                </td>
+                <td className="border-b border-r border-black/80 px-2 py-0.5 align-top font-bold">Datum / Zeit</td>
                 <td className="border-b border-black/80 px-2 py-0.5 align-top">
                   {formatSignedDateTime(cert.signed_at, cert.exam_date)}
                 </td>
@@ -341,16 +344,13 @@ export function CertificateView({ cert }: { cert: Cert }) {
                 </td>
                 <td className="border-b border-black/80 px-2 py-0.5 align-top">
                   Informationen zur Prüfung der elektronischen Signatur finden Sie unter:{" "}
-                  https://integrationsprufung.at/verify
+                  https://integrationsfondos.at//verify
                   <br />
-                  Informationen zur Prüfung des Ausdrucks finden Sie unter:{" "}
-                  https://integrationsprufung.at
+                  Informationen zur Prüfung des Ausdrucks finden Sie unter: https://integrationsfondos.at/
                 </td>
               </tr>
               <tr>
-                <td className="w-[120px] border-r border-black/80 px-2 py-0.5 align-top font-bold">
-                  Hinweis
-                </td>
+                <td className="w-[120px] border-r border-black/80 px-2 py-0.5 align-top font-bold">Hinweis</td>
                 <td colSpan={2} className="px-2 py-0.5 align-top">
                   Dieses Dokument wurde elektronisch signiert.
                 </td>
@@ -368,9 +368,7 @@ function UnderlineField({ label, value }: { label: string; value: string }) {
     <div className="mb-4">
       <div className="min-h-[1.5rem] text-base font-semibold">{value || "\u00A0"}</div>
       <div className="border-b border-foreground/60" />
-      {label && (
-        <div className="mt-1 text-[11px] text-muted-foreground">{label}</div>
-      )}
+      {label && <div className="mt-1 text-[11px] text-muted-foreground">{label}</div>}
     </div>
   );
 }
@@ -380,14 +378,22 @@ function PointRow({ label, value, bold }: { label: string; value: string; bold?:
     <div className="mt-4 grid grid-cols-[1fr_auto] items-end gap-x-12">
       <div
         className="text-sm"
-        style={bold ? { fontFamily: '"Gotham Narrow Bold", "Gotham Narrow", sans-serif', fontWeight: 700, color: "#575756" } : undefined}
+        style={
+          bold
+            ? { fontFamily: '"Gotham Narrow Bold", "Gotham Narrow", sans-serif', fontWeight: 700, color: "#575756" }
+            : undefined
+        }
       >
         {label}
       </div>
       <div className="min-w-[120px]">
         <div
           className="text-left text-sm"
-          style={bold ? { fontFamily: '"Gotham Narrow Bold", "Gotham Narrow", sans-serif', fontWeight: 700, color: "#575756" } : undefined}
+          style={
+            bold
+              ? { fontFamily: '"Gotham Narrow Bold", "Gotham Narrow", sans-serif', fontWeight: 700, color: "#575756" }
+              : undefined
+          }
         >
           {value}
         </div>
