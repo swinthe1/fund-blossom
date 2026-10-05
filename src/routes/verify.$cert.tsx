@@ -94,17 +94,6 @@ function VerifyResult() {
     })();
   }, [cert]);
 
-  useEffect(() => {
-    const onKey = (e: KeyboardEvent) => {
-      const k = e.key.toLowerCase();
-      if ((e.ctrlKey || e.metaKey) && (k === "s" || k === "p")) { e.preventDefault(); e.stopPropagation(); }
-    };
-    const onCtx = (e: MouseEvent) => e.preventDefault();
-    window.addEventListener("keydown", onKey, true);
-    document.addEventListener("contextmenu", onCtx);
-    return () => { window.removeEventListener("keydown", onKey, true); document.removeEventListener("contextmenu", onCtx); };
-  }, []);
-
   return (
     <div className="flex min-h-screen flex-col">
       <main className="flex-1 bg-muted/30 py-10">
@@ -115,13 +104,11 @@ function VerifyResult() {
               <div className="font-mono text-sm">{cert}</div>
             </div>
           </div>
-
           {state === "loading" && (
             <div className="rounded-lg border border-border bg-background p-10 text-center text-muted-foreground">
               Prüfe Zertifikat...
             </div>
           )}
-
           {state === "notfound" && (
             <div className="rounded-lg border-2 border-primary bg-background p-10 text-center">
               <div className="text-3xl">⚠️</div>
@@ -131,19 +118,16 @@ function VerifyResult() {
               </p>
             </div>
           )}
-
           {state === "error" && (
             <div className="rounded-lg border border-primary bg-background p-6 text-sm text-primary">
               Fehler: {errMsg}
             </div>
           )}
-
           {state === "ok" && data && (
-            <div className="cert-protect select-none" onContextMenu={(e) => e.preventDefault()} onDragStart={(e) => e.preventDefault()} onCopy={(e) => e.preventDefault()}>
+            <div>
               <CertificateView cert={data} />
             </div>
           )}
-          <style>{`@media print { body * { display: none !important; } body::after { content: "Drucken ist nicht erlaubt."; display: block; padding: 40px; font-size: 20px; } } .cert-protect img, .cert-protect svg { pointer-events: none; -webkit-user-drag: none; } .cert-protect { -webkit-touch-callout: none; }`}</style>
         </div>
       </main>
     </div>
