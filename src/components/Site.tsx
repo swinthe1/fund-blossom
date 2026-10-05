@@ -1,7 +1,7 @@
 import { Link } from "@tanstack/react-router";
 import { useEffect, useRef, useState, type ReactNode } from "react";
 import { ChevronDown, Globe, Mail, Menu, Phone, Search, X } from "lucide-react";
-import logoAsset from "@/assets/oif-logo.png.asset.png";
+<span>Academy Portal</span>
 
 const links = [
   { to: "/der-oeif", label: "Der ÖIF" },
