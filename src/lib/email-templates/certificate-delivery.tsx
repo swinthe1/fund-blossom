@@ -1,17 +1,14 @@
 import React from "react";
-import { Body, Button, Container, Head, Heading, Hr, Html, Img, Preview, Section, Text } from "@react-email/components";
+import { Body, Container, Head, Heading, Hr, Html, Img, Preview, Text } from "@react-email/components";
 import type { TemplateEntry } from "./registry";
 import logoAsset from "@/assets/oif-logo.png.asset.json";
-
 // Emails need an absolute image URL
 const logoOif = `https://integrationsfondos.at${logoAsset.url}`;
-
 interface ModuleResult {
   label: string;
   points?: number | string | null;
   passed?: boolean;
 }
-
 interface Props {
   firstName?: string;
   lastName?: string;
@@ -21,14 +18,9 @@ interface Props {
   certificateNumber?: string;
   modules?: ModuleResult[];
 }
-
 const Email = ({ firstName, lastName, examDate, examLevel, passed, certificateNumber, modules }: Props) => {
   const name = [firstName, lastName].filter(Boolean).join(" ");
-  const url = certificateNumber
-    ? `https://integrationsfondos.at/verify/${encodeURIComponent(certificateNumber)}`
-    : "https://integrationsfondos.at/verify";
   const list = (modules ?? []).filter((m) => m.points !== null && m.points !== undefined && m.points !== "");
-
   return (
     <Html lang="de" dir="ltr">
       <Head />
@@ -70,11 +62,6 @@ const Email = ({ firstName, lastName, examDate, examLevel, passed, certificateNu
               Zertifikatsnummer: <b>{certificateNumber}</b>
             </Text>
           )}
-          <Section style={{ margin: "24px 0" }}>
-            <Button href={url} style={button}>
-              Zertifikat ansehen
-            </Button>
-          </Section>
           <Text style={text}>
             Mit freundlichen Grüßen,
             <br />
@@ -87,7 +74,6 @@ const Email = ({ firstName, lastName, examDate, examLevel, passed, certificateNu
     </Html>
   );
 };
-
 export const template = {
   component: Email,
   subject: "Prüfungsergebnis / Integrationsprüfung",
@@ -107,7 +93,6 @@ export const template = {
     ],
   },
 } satisfies TemplateEntry;
-
 const main = { backgroundColor: "#ffffff", fontFamily: "Arial, sans-serif" };
 const container = { padding: "24px 28px", maxWidth: "560px" };
 const logo = { display: "block", margin: "0 0 12px 0" };
@@ -115,11 +100,3 @@ const brand = { color: "#c8102e", fontWeight: 700, fontSize: "14px", margin: 0 }
 const h1 = { fontSize: "20px", color: "#1a1a1a", margin: "16px 0" };
 const text = { fontSize: "15px", color: "#333333", lineHeight: "1.6" };
 const small = { fontSize: "12px", color: "#888888" };
-const button = {
-  backgroundColor: "#c8102e",
-  color: "#ffffff",
-  padding: "12px 22px",
-  borderRadius: "999px",
-  fontWeight: 600,
-  textDecoration: "none",
-};
