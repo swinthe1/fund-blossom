@@ -1,7 +1,7 @@
 import { Link } from "@tanstack/react-router";
 import { useEffect, useRef, useState, type ReactNode } from "react";
 import { ChevronDown, Globe, Mail, Menu, Phone, Search, X } from "lucide-react";
-import logoAsset from "@/assets/oif-logo.png.asset.json";
+import logoOif from "@/assets/logo_oif.svg";
 
 const links = [
   { to: "/der-oeif", label: "Der ÖIF" },
@@ -67,7 +67,7 @@ function useOutside(close: () => void) {
 function Logo() {
   return (
     <Link to="/" className="flex items-center">
-      <img src={logoAsset.url} alt="Österreichischer Integrationsfonds – Zertifiziert für Integrationskurse" className="h-12 w-auto sm:h-14" />
+      <img src={logoOif} alt="Österreichischer Integrationsfonds – Zertifiziert für Integrationskurse" className="h-12 w-auto sm:h-14" />
     </Link>
   );
 }
