@@ -1,9 +1,8 @@
 import React from "react";
 import { Body, Container, Head, Heading, Hr, Html, Img, Preview, Text } from "@react-email/components";
 import type { TemplateEntry } from "./registry";
-import logoAsset from "@/assets/oif-logo.png.asset.json";
 // Emails need an absolute image URL
-const logoOif = `https://integrationsfondos.at${logoAsset.url}`;
+const logoOif = "https://integrationsfondos.at/oif-logo.png";
 interface ModuleResult {
   label: string;
   points?: number | string | null;
